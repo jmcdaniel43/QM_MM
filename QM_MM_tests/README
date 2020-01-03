@@ -1,0 +1,37 @@
+reference benchmarks were run with unmodified psi4, installed by conda in RHEL7 environment on gemini-cpu cluster.  psi4 version is:
+psi4                      1.3.2+ecbda83    py37h31b3128_0    psi4
+
+these benchmarks incorporate analytic QM/MM interactions from embedded MM point charges
+
+
+Summary of Tests:
+
+1) RKS_test_He_5Qfield_quadrature_only: 
+   this is a direct test of the Psi4 quadrature implementation of the external MM field for a He ion in a 5 ion field.
+   the MMsystem is input to Psi4, and the MMfield is evaluated directly at every point on the quadrature grid.
+   this is a test of the quadrature implementation in the one-electron potential contribution to the Hamiltonian/Kohn-Sham matrix
+
+   a collection of tests for different angular/radial quadrature settings can be run with the run_tests.sh script
+
+
+2) RKS_test_He_5Qfield_PMEgrid_cutoff:
+   This is the same system as 1), but now the MM field is computed (in part) using a PME sum, evaluated on the PME grid by OpenMM,
+   input to Psi4, and interpolated onto the DFT-quadrature grid.  Thus the difference between 1) and 2) tests both the evaluation
+   of the external potential on the PME grid using OpenMM, as well as interpolation accuracy from the PME to quadrature grid.
+
+   Note that interpolation from PME-to-DFT grid is inaccurate for short-range interactions.  Thus we use a hybrid scheme, where short-range
+   interactions are implemented analytically in Psi4, and only MM interactions beyond a cutoff are computed with OpenMM/PME.
+   The current test-case incorporates the 3 closest ions analytically (in Psi4), and the two farthest ions are incorporated by the OpenMM computed external potential
+
+   a collection of tests for different PMEgrid/cutoff and angular/radial quadrature settings can be run with the run_tests.sh script
+
+
+3) UKS_test_Li_5Qfield:
+   This is similar to test 2), but for open-shell Li atom.  The ion field is the same, and the closest 3 ions are treated analytically, and the two farthest are incorporated
+   by the OpenMM computed external potential.  This tests the quadrature implementation in the Unrestricted-Kohn Sham code
+
+
+4) PME_test_ion_pair_QMregion_exclude:
+   This is a direct test of the evaluation of the external potential on the PME grid by OpenMM.  This example is for a box with two Li-I ion pairs,
+   and prints out the external potential on the PME grid evaluated with the full PME sum compared to a direct "real-space" evaluation of the potential on the grid
+

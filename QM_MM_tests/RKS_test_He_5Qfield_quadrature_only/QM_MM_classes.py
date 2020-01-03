@@ -60,11 +60,11 @@ class QM(object):
                  self.atoms_type.append( element.symbol )
 
 
-       # here we setup the Psi4 geometry class
-       # geomlist input is a 2D list ( natoms x 4 ) with type , x , y , z for every atom
-       # input is in OpenMM units, and internally converted to Psi4 units
+    # here we setup the Psi4 geometry class
+    # geomlist input is a 2D list ( natoms x 4 ) with type , x , y , z for every atom
+    # input is in OpenMM units, and internally converted to Psi4 units
     def set_geometry(self, geomlist , charge, spin ):
-          lengthconv = 10.0  # nm to angstrom
+          lengthconv = 10.0  # nm to Angstrom
           print("Setting charge and spin in QM calculations : " , charge , spin )
           if spin > 1:
              # set UKS
@@ -106,10 +106,40 @@ class QM(object):
 
 
 
+#************** testing *************************
+# this is for testing, construct a list of all the MM atoms xyz positions and charge
+# to give to Psi4 to test numerical quadrature
+#
+#  output :: MMenv -- list of [ [ q1, x1, y1, z1 ] , [ q2, x2, y2, z2 ] ... ] 
+#            for all atoms in MM region (full MM environment to embed in QM calculation)
+#***********************************************
+def create_MM_env_full(  MMsys , QMatoms ):
+    lengthconv = 10.0  # nm to angstrom
+    MMenv=[]
+
+    # get positions from openMM
+    # OpenMM state object stores positions
+    state = MMsys.simmd.context.getState(getEnergy=False,getForces=False,getVelocities=False,getPositions=True)
+    # these are all the positions, we only want some...
+    position_all = state.getPositions()
+    
+    # loop over all atoms in system
+    for atom in MMsys.simmd.topology.atoms():
+        # if not QMatom
+        if atom.index in QMatoms:
+            pass
+        else:
+            # get partial charge from force field.  Need this if this is MM atom in QMregion...
+            (q_i, sig, eps) = MMsys.nbondedForce.getParticleParameters(atom.index)           
+            MMenv.append( [ q_i._value , position_all[atom.index][0]._value*lengthconv , position_all[atom.index][1]._value*lengthconv , position_all [atom.index][2]._value*lengthconv ] )  # q , x , y , z
+
+    return MMenv
+
+
 # This class controls the MM region of the simulation
 class MM(object):
     # input to init is 3 lists , list of pdb files, list of residue xml files, list of force field xml files , and list of atoms in QMregion   
-    def __init__(self, pdb_list , residue_xml_list , ff_xml_list , QMregion ):
+    def __init__(self, pdb_list , residue_xml_list , ff_xml_list , QMregion , cutoff ):
           # ********************* Standard Simulation settings.  Change these if necessary
           # this controls openMM API kernel
           self.NPT = False
@@ -119,7 +149,7 @@ class MM(object):
           self.friction_drude = 1/picosecond
           self.timestep = 0.001*picoseconds
           self.pressure = Vec3(1.0,1.0,1.0)*atmosphere
-          self.cutoff = 1.4*nanometer  
+          self.cutoff = cutoff 
           self.barofreq = 100
           # set Open MM Integrator, use Drude integrator with standard settings
           self.integrator = DrudeLangevinIntegrator(self.temperature, self.friction, self.temperature_drude, self.friction_drude, self.timestep)    

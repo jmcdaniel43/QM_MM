@@ -47,8 +47,7 @@ from datetime import datetime
 QMatoms=(0,)
 # charge and spin
 QMcharge=0
-QMspin=1
-#QMspin=2
+QMspin=2
 
 # QM atoms and MM atoms with analytic Coulomb embedding
 # note that QMregion should be ordered ( QMatoms , ... ), otherwise method set_geometry won't work properly.
@@ -72,7 +71,7 @@ pme_grid_size=100
 #**********************************************************************
 
 # Initialize: Input list of pdb and xml files, and QMregion
-MMsys=MM( pdb_list = [ './input_files/He_5ions.pdb', ] , residue_xml_list = [ './input_files/sapt_residues.xml' , ] , ff_xml_list = [ './input_files/sapt.xml', ] , QMregion = QMregion  )
+MMsys=MM( pdb_list = [ '../input_files/Li_5ions.pdb', ] , residue_xml_list = [ '../input_files/sapt_residues.xml' , ] , ff_xml_list = [ '../input_files/sapt.xml', ] , QMregion = QMregion  )
 
 # if periodic residue, call this
 #MMsys.set_periodic_residue(True)

@@ -1,0 +1,9 @@
+REMARK   1 CREATED WITH OPENMM 7.2.2, 2018-08-22
+CRYST1   60.000   60.000   60.000  90.00  90.00  90.00 P 1           1 
+HETATM    1  He  He  A   1      30.000  30.000  30.000  1.00  0.00          He  
+HETATM    2  Mg  Mg  B   2      33.000  30.000  30.000  1.00  0.00          Mg
+HETATM    3  Cl  Cl  C   3      25.900  25.000  30.000  1.00  0.00          Cl
+HETATM    4  Cl  Cl  D   4      36.100  35.000  30.000  1.00  0.00          Cl
+HETATM    5   K   K  E   5      45.900  30.000  30.000  1.00  0.00          K
+HETATM    6  Cl  Cl  F   6      20.100  35.000  30.000  1.00  0.00          Cl
+END

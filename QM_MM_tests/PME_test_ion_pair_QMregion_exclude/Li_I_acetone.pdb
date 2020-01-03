@@ -1,0 +1,15 @@
+REMARK   1 CREATED WITH OPENMM 7.2.2, 2018-08-22
+CRYST1   60.000   60.000   60.000  90.00  90.00  90.00 P 1           1 
+HETATM    1  Li  Li  A   1       2.900   0.000   0.000  1.00  0.00          Li  
+HETATM    2  I   I   B   2       3.100   0.000   0.000  1.00  0.00           I
+HETATM    3  O2a actnX   3       4.150  10.360  24.820  1.00  0.00           O
+HETATM    4  C2a actnX   3       4.600   9.450  25.490  1.00  0.00           C
+HETATM    5  C3a actnX   3       3.710   8.420  26.130  1.00  0.00           C
+HETATM    6 C3a1 actnX   3       6.090   9.110  25.730  1.00  0.00           C
+HETATM    7  H3a actnX   3       2.650   8.700  26.200  1.00  0.00           H
+HETATM    8 H3a1 actnX   3       3.870   7.530  25.530  1.00  0.00           H
+HETATM    9 H3a2 actnX   3       4.100   8.190  27.120  1.00  0.00           H
+HETATM   10 H3a3 actnX   3       6.240   8.070  25.440  1.00  0.00           H
+HETATM   11 H3a4 actnX   3       6.350   9.060  26.790  1.00  0.00           H
+HETATM   12 H3a5 actnX   3       6.800   9.800  25.270  1.00  0.00           H
+END

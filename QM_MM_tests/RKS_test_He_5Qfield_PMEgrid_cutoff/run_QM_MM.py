@@ -16,7 +16,18 @@ import numpy as np
 from sys import stdout
 from time import gmtime, strftime
 from datetime import datetime
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--pme_grid", type=str, help="pme_grid_size")
+parser.add_argument("--cutoff", type=str, help="real space cutoff")
+parser.add_argument("--quad_angle", type=str, help="angular quadrature grid")
+parser.add_argument("--quad_radial", type=str, help="radial quadrature grid")
+args = parser.parse_args()
+
+pme_grid_size=int(args.pme_grid)
+cutoff = float(args.cutoff) * nanometer
+quadrature_grid = ( int(args.quad_angle) , int(args.quad_radial) )
 
 # *********************************************************************
 #                     Define QM region
@@ -65,14 +76,13 @@ if not set(QMatoms).issubset(QMregion) :
 
 
 DFT_functional='PBE'
-pme_grid_size=100
 
 # *********************************************************************
 #                     Create MM system object
 #**********************************************************************
 
 # Initialize: Input list of pdb and xml files, and QMregion
-MMsys=MM( pdb_list = [ './input_files/He_5ions.pdb', ] , residue_xml_list = [ './input_files/sapt_residues.xml' , ] , ff_xml_list = [ './input_files/sapt.xml', ] , QMregion = QMregion  )
+MMsys=MM( pdb_list = [ '../input_files/He_5ions.pdb', ] , residue_xml_list = [ '../input_files/sapt_residues.xml' , ] , ff_xml_list = [ '../input_files/sapt.xml', ] , QMregion = QMregion , cutoff = cutoff  )
 
 # if periodic residue, call this
 #MMsys.set_periodic_residue(True)
@@ -99,7 +109,7 @@ sapt_exclusions = sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.mode
 # possible quadrature grids: see Psi4 manual
 #quadrature_grid = ( 50 , 12 )  # spherical points, radial points
 #quadrature_grid = ( 302 , 75 )  # spherical points, radial points
-quadrature_grid = ( 2702 , 89 )  # spherical points, radial points
+#quadrature_grid = ( 2702 , 89 )  # spherical points, radial points
 
 QMsys = QM( QMname = 'test' , basis = 'aug-cc-pvdz' , dft_spherical_points = quadrature_grid[0] , dft_radial_points = quadrature_grid[1] , scf_type = 'df' , qmmm='true' )
 

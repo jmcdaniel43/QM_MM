@@ -16,7 +16,18 @@ import numpy as np
 from sys import stdout
 from time import gmtime, strftime
 from datetime import datetime
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--pme_grid", type=str, help="pme_grid_size")
+parser.add_argument("--cutoff", type=str, help="real space cutoff")
+parser.add_argument("--quad_angle", type=str, help="angular quadrature grid")
+parser.add_argument("--quad_radial", type=str, help="radial quadrature grid")
+args = parser.parse_args()
+
+pme_grid_size=int(args.pme_grid)
+cutoff = float(args.cutoff) * nanometer
+quadrature_grid = ( int(args.quad_angle) , int(args.quad_radial) )
 
 # *********************************************************************
 #                     Define QM region
@@ -54,7 +65,7 @@ QMspin=1
 # note that QMregion should be ordered ( QMatoms , ... ), otherwise method set_geometry won't work properly.
 # we currently don't have a check for this, as we anticipate that we will eventually generate QMregion automatically
 # from QMatoms using a cutoff distance
-QMregion=(0,1,2,3)
+QMregion=(0,)
 
 # Make sure QMatoms is subset of QMregion
 if not set(QMatoms).issubset(QMregion) :
@@ -65,14 +76,13 @@ if not set(QMatoms).issubset(QMregion) :
 
 
 DFT_functional='PBE'
-pme_grid_size=100
 
 # *********************************************************************
 #                     Create MM system object
 #**********************************************************************
 
 # Initialize: Input list of pdb and xml files, and QMregion
-MMsys=MM( pdb_list = [ './input_files/He_5ions.pdb', ] , residue_xml_list = [ './input_files/sapt_residues.xml' , ] , ff_xml_list = [ './input_files/sapt.xml', ] , QMregion = QMregion  )
+MMsys=MM( pdb_list = [ '../input_files/He_5ions.pdb', ] , residue_xml_list = [ '../input_files/sapt_residues.xml' , ] , ff_xml_list = [ '../input_files/sapt.xml', ] , QMregion = QMregion , cutoff = cutoff  )
 
 # if periodic residue, call this
 #MMsys.set_periodic_residue(True)
@@ -97,9 +107,6 @@ sapt_exclusions = sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.mode
 
 # Define QM region and Initialize QM class
 # possible quadrature grids: see Psi4 manual
-#quadrature_grid = ( 50 , 12 )  # spherical points, radial points
-#quadrature_grid = ( 302 , 75 )  # spherical points, radial points
-quadrature_grid = ( 2702 , 89 )  # spherical points, radial points
 
 QMsys = QM( QMname = 'test' , basis = 'aug-cc-pvdz' , dft_spherical_points = quadrature_grid[0] , dft_radial_points = quadrature_grid[1] , scf_type = 'df' , qmmm='true' )
 
@@ -113,43 +120,21 @@ positions  = MMsys.get_positions_QM( QMsys )
 QMsys.set_geometry( positions , charge = QMcharge, spin = QMspin )
 
 
-#**********************************************************************
-#                     QM/MM Simulation
-#**********************************************************************
-# Get QM positions from MMsystem
-positions  = MMsys.get_positions_QM( QMsys )
+#***************** test Psi4 quadrature **********************
+#  input MMenv to Psi4, Psi4 will calculate the Coulomb potential
+#  on the quadrature grid from this MMenv, and will use this
+#  in the DFT quadrature.  This is for internal testing, so no field input from OpenMM...
+#*************************************************************
+MMenv = create_MM_env_full(  MMsys , QMatoms )
 
-#******************* External potential on PME grid ******************
-state = MMsys.simmd.context.getState(getEnergy=True,getForces=True,getVelocities=True,getPositions=True,getVext_grids=True, getPME_grid_positions=True)
+#print( 'MMenv ')
+#print( MMenv )
+#sys.exit()
 
-# external potential on PME grid
-vext_tot = state.getVext_grid()
-# PME grid positions
-PME_grid_positions = state.getPME_grid_positions()      
-#** vext_tot from OpenMM is in kJ/mol/e  units, convert to Hartree for input to Psi4
-vext_tot = np.array( vext_tot ) / 2625.4996
-#** PME_grid_positions from OpenMM is in nanometers, convert to Bohr for input to Psi4
-PME_grid_positions = np.array( PME_grid_positions ) * 18.89726
-
-# update positions on QMsys
-QMsys.set_geometry( positions , charge = QMcharge , spin = QMspin )
-
-# QM calculation
-# 2 options for scipy interpolation: set interpolation_method = "interpn" or "griddata".  "interpn" should be much faster and is for regularly spaced grids
-( QMsys.energy , QMsys.wfn ) = psi4.energy( DFT_functional , return_wfn=True , pme_grid_size=pme_grid_size , vexternal_grid=vext_tot , pmegrid_xyz = PME_grid_positions , interpolation_method="interpn" )
+# QM quadrature test---- note, if MMsys in input to Psi4 as **kwarg, then Psi4 internally evaluates Coulomb potential from MMenv on quadrature grid...
+( QMsys.energy , QMsys.wfn ) = psi4.energy( DFT_functional , return_wfn=True , mm_env=MMenv )   # note, Psi4 will lowercase kwargs, use lowercase argument
 
 print( 'QM energy ' , QMsys.energy )
-
-sys.exit()
-
-# QM charges
-QMsys.get_DMA_charges()
-
-# update MM with QM charges
-MMsys.update_charges( QMsys )
-
-# 10  MM integration steps
-MMsys.simmd.step(10)
 
 
 exit()

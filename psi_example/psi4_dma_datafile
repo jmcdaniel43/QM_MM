@@ -1,0 +1,9 @@
+File molecule.fchk Density SCF
+Angstrom
+AU
+Multipoles
+Switch 0.000000
+Radius C 0.53 N 0.53 H 0.53
+Limit 4
+Start
+Finish

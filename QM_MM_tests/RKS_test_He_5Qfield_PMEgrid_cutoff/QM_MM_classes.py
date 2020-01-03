@@ -109,7 +109,7 @@ class QM(object):
 # This class controls the MM region of the simulation
 class MM(object):
     # input to init is 3 lists , list of pdb files, list of residue xml files, list of force field xml files , and list of atoms in QMregion   
-    def __init__(self, pdb_list , residue_xml_list , ff_xml_list , QMregion ):
+    def __init__(self, pdb_list , residue_xml_list , ff_xml_list , QMregion , cutoff ):
           # ********************* Standard Simulation settings.  Change these if necessary
           # this controls openMM API kernel
           self.NPT = False
@@ -119,7 +119,7 @@ class MM(object):
           self.friction_drude = 1/picosecond
           self.timestep = 0.001*picoseconds
           self.pressure = Vec3(1.0,1.0,1.0)*atmosphere
-          self.cutoff = 1.4*nanometer  
+          self.cutoff = cutoff 
           self.barofreq = 100
           # set Open MM Integrator, use Drude integrator with standard settings
           self.integrator = DrudeLangevinIntegrator(self.temperature, self.friction, self.temperature_drude, self.friction_drude, self.timestep)    
