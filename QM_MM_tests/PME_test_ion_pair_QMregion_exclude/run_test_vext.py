@@ -79,12 +79,12 @@ PME_grid_positions = state.getPME_grid_positions()
 #sys.exit()
 
 # print PME grid
-print(" PME grid \n")
-for i in range(pme_grid_a):
-    for j in range(pme_grid_b):
-        for k in range(pme_grid_c):
-            index = i * pme_grid_b * pme_grid_c + j * pme_grid_c + k
-            print( i , j , k , PME_grid_positions[index][0] ,  PME_grid_positions[index][1] ,  PME_grid_positions[index][2] )
+#print(" PME grid \n")
+#for i in range(pme_grid_a):
+#    for j in range(pme_grid_b):
+#        for k in range(pme_grid_c):
+#            index = i * pme_grid_b * pme_grid_c + j * pme_grid_c + k
+#            print( i , j , k , PME_grid_positions[index][0] ,  PME_grid_positions[index][1] ,  PME_grid_positions[index][2] )
 
 
 #libc = ctypes.CDLL(None)

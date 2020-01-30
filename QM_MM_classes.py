@@ -21,6 +21,21 @@ import subprocess
 #
 #**************************************************************************
 
+#  This class holds atom info for QMregion.  Not to be confused with atom class of OpenMM ...
+class atom_QM(object):
+    def __init__(self, element, charge, atom_index ):
+        self.element = element
+        self.charge  = charge
+        self.atom_index = atom_index
+        # initialize positions to zero in lieu of anything better...
+        self.x = 0.0; self.y=0.0; self.z=0.0
+
+    def set_xyz( self, x , y , z ):
+        self.x = x
+        self.y = y 
+        self.z = z
+
+
 #  This class is used to initialize a QM simulation
 class QM(object):
     def __init__(self, QMname, basis, dft_spherical_points , dft_radial_points , scf_type , qmmm='true' ):
@@ -37,45 +52,73 @@ class QM(object):
           psi4.set_options( {'basis' : basis , 'dft_spherical_points' : dft_spherical_points , 'dft_radial_points' : dft_radial_points , 'scf_type' : scf_type , 'qmmm' : qmmm  } )
 
 
-    # Input QMregion is tuple specifying atom indices of QM region, which
+    #**********************************
+    # Input QMregion_list is tuple specifying atom indices of QM region, which
     # encompasses both QMatoms (input tuple) and additional MM embedding atoms
     # MMsys is input to figure out element types of QM atoms
-    def set_QM_region(self, MMsys , QMregion , QMatoms ):
-          # store data structures for later...
-          self.QMregion = QMregion
-          self.QMatoms = QMatoms
-          self.atoms_index=[]
-          self.atoms_type=[]
-          self.atoms_charge=[]
+    def set_QM_region(self, MMsys , QMregion_list , QMatoms_list ):
+          # create lists of atom_QM objects: there are two lists here:
+          # QMatoms stores data for QMatoms
+          # QMother stores data for QMregion atoms that are not QMatoms
+          self.QMatoms = []
+          self.QMother = []
+
           # maybe not the best way to do it, but loop over all MM atoms ...
           for atom in MMsys.simmd.topology.atoms():
              # if in QM region ..
-             if atom.index in QMregion:
+             if atom.index in QMregion_list:
                  element = atom.element
                  # get partial charge from force field.  Need this if this is MM atom in QMregion...
                  (q_i, sig, eps) = MMsys.nbondedForce.getParticleParameters(atom.index)
+                 # create atom_QM object
+                 atom_object = atom_QM( element.symbol , q_i._value , atom.index )     
+                 # see where to store atom_object
+                 if atom.index in QMatoms_list:
+                     self.QMatoms.append( atom_object )  #QMatom
+                 else:
+                     self.QMother.append( atom_object )  #atom in QMregion, but not QMatom
 
-                 self.atoms_charge.append( q_i._value )
-                 self.atoms_index.append( atom.index )
-                 self.atoms_type.append( element.symbol )
 
-
-       # here we setup the Psi4 geometry class
-       # geomlist input is a 2D list ( natoms x 4 ) with type , x , y , z for every atom
-       # input is in OpenMM units, and internally converted to Psi4 units
-    def set_geometry(self, geomlist , charge, spin ):
+    #***************************************
+    # this method gets positions of the QM atoms from OpenMM
+    # simulation object, and sets them in QM atom_object
+    #
+    #   ***** Unit conversion *********
+    #   OpenMM gives positions in nanometer
+    #   Psi4 input positions in Angstrom
+    def set_QM_positions( self, MMsys ):
           lengthconv = 10.0  # nm to angstrom
+          # OpenMM state object stores positions
+          state = MMsys.simmd.context.getState(getEnergy=False,getForces=False,getVelocities=False,getPositions=True)
+          # these are all the positions, we only want some...
+          position_all = state.getPositions()
+
+          # update positions of atom_objects in QMatoms and QMother lists
+          #*** first update positions in QMatoms
+          for atom in self.QMatoms:
+               index = atom.atom_index
+               atom.set_xyz( position_all[index][0]._value * lengthconv, position_all[index][1]._value * lengthconv, position_all[index][2]._value * lengthconv )
+          #**** now positions in QMother
+          for atom in self.QMother:
+               index = atom.atom_index
+               atom.set_xyz( position_all[index][0]._value * lengthconv, position_all[index][1]._value * lengthconv, position_all[index][2]._value * lengthconv )
+
+
+    #*************************************
+    # here we setup the Psi4 geometry class
+    # geomlist input is a 2D list ( natoms x 4 ) with type , x , y , z for every atom
+    def set_geometry(self, charge, spin ):
           print("Setting charge and spin in QM calculations : " , charge , spin )
           if spin > 1:
              # set UKS
              core.set_local_option('SCF','REFERENCE','UKS')
 
           #*************** Add MM charges in QMregion for analytic embedding
-          # MMembed atoms should start after QMatoms in QMregion ...
+          # these atoms are in QMother, which contains QMregion minus QMatoms
           Chrgfield = QMMM()  # this class should be available with 'from psi4.driver import *'
-          MMembed_start = len(self.QMatoms)
-          for i in range(MMembed_start,len(self.QMregion)):
-              Chrgfield.extern.addCharge( self.atoms_charge[i] , geomlist[i][1]*lengthconv , geomlist[i][2]*lengthconv , geomlist[i][3]*lengthconv )  # q , x , y , z     
+          
+          for atom in self.QMother:
+              Chrgfield.extern.addCharge( atom.charge , atom.x , atom.y , atom.z )   
           core.set_global_option_python('EXTERN', Chrgfield.extern)
  
           # construct geometry string
@@ -83,8 +126,10 @@ class QM(object):
           geometrystring= geometrystring + str(charge) + " " + str(spin) +" \n"
           # don't reorient molecule.  Don't want symmetry anyway for DMA
           geometrystring= geometrystring + " noreorient  \n  " + " nocom  \n  "
-          for i in range(len(self.QMatoms)):
-              geometrystring = geometrystring + " " + str(geomlist[i][0]) + " " + str(geomlist[i][1]*lengthconv) + " " + str(geomlist[i][2]*lengthconv) + " " + str(geomlist[i][3]*lengthconv) + " \n"
+
+          #**************** Input QMatoms/positions for QM calculation
+          for atom in self.QMatoms:
+              geometrystring = geometrystring + " " + str(atom.element) + " " + str(atom.x) + " " + str(atom.y) + " " + str(atom.z) + " \n"
           geometrystring = geometrystring + ' symmetry c1 \n '
           # now create Psi4 geometry object
           self.geometry = psi4.geometry( geometrystring )
@@ -109,7 +154,7 @@ class QM(object):
 # This class controls the MM region of the simulation
 class MM(object):
     # input to init is 3 lists , list of pdb files, list of residue xml files, list of force field xml files , and list of atoms in QMregion   
-    def __init__(self, pdb_list , residue_xml_list , ff_xml_list , QMregion ):
+    def __init__(self, pdb_list , residue_xml_list , ff_xml_list , QMregion_list ):
           # ********************* Standard Simulation settings.  Change these if necessary
           # this controls openMM API kernel
           self.NPT = False
@@ -119,7 +164,8 @@ class MM(object):
           self.friction_drude = 1/picosecond
           self.timestep = 0.001*picoseconds
           self.pressure = Vec3(1.0,1.0,1.0)*atmosphere
-          self.cutoff = 1.4*nanometer  
+
+          self.cutoff = 1.0*nanometer  
           self.barofreq = 100
           # set Open MM Integrator, use Drude integrator with standard settings
           self.integrator = DrudeLangevinIntegrator(self.temperature, self.friction, self.temperature_drude, self.friction_drude, self.timestep)    
@@ -127,7 +173,7 @@ class MM(object):
           self.integrator.setMaxDrudeDistance(0.02)  
            
           # store QMregion
-          self.QMregion = QMregion
+          self.QMregion_list = QMregion_list
 
           # now create pdb object, use first pdb file input
           self.pdb = PDBFile( pdb_list[0] )
@@ -135,6 +181,7 @@ class MM(object):
           for residue_file in residue_xml_list:
                self.pdb.topology.loadBondDefinitions(residue_file)
           self.pdb.topology.createStandardBonds()
+
           # create modeller
           self.modeller = Modeller(self.pdb.topology, self.pdb.positions)
           # create force field
@@ -143,7 +190,7 @@ class MM(object):
           self.modeller.addExtraParticles(self.forcefield)
 
           # Add tuple of QM atoms to topology
-          self.modeller.topology.addQMatoms( self.QMregion )
+          self.modeller.topology.addQMatoms( self.QMregion_list )
 
           # create openMM system object
           self.system = self.forcefield.createSystem(self.modeller.topology, nonbondedCutoff=self.cutoff, constraints=None, rigidWater=True)
@@ -236,31 +283,28 @@ class MM(object):
           self.simmd.reporters = []
           self.simmd.reporters.append(DCDReporter('md_npt1.dcd', 10))
 
-    # this method gets positions of the QM atoms  
-    def get_positions_QM( self, QMsys ):
-          # OpenMM state object stores positions
-          state = self.simmd.context.getState(getEnergy=False,getForces=False,getVelocities=False,getPositions=True)
-          # these are all the positions, we only want some...
-          position_all = state.getPositions()
 
-          # output a list with QM elements and positions
-          position_QM =[]
-          for i in range(len(QMsys.atoms_index)):
-               index = QMsys.atoms_index[i]
-               position_QM.append( [ QMsys.atoms_type[i] , position_all[index][0]._value , position_all[index][1]._value , position_all[index][2]._value ] )
-          
-          return position_QM   
-
-      
+    #*********** this needs to be rewritten for the re-worked data structures ...      
     # this method updates charges on MM atoms
-    def update_charges( self , QMsys ):
+    # def update_charges( self , QMsys ):
           # loop over QM atoms, and fill in new charges
-          for i in range(len(QMsys.atoms_index)):
-               q = QMsys.charges[i]
-               index = QMsys.atoms_index[i]
+    #     for i in range(len(QMsys.atoms_index)):
+    #          q = QMsys.charges[i]
+    #          index = QMsys.atoms_index[i]
                # for SAPT-FF, set sigma=1, epsilon=0 (no LJ interaction)
-               self.nbondedForce.setParticleParameters(index, q, 1.0 , 0.0)
+    #          self.nbondedForce.setParticleParameters(index, q, 1.0 , 0.0)
           # now update the parameters in the context object
-          self.nbondedForce.updateParametersInContext( self.simmd.context )
+    #     self.nbondedForce.updateParametersInContext( self.simmd.context )
 
+# this is standalone helper method, outside of class
+# input is an OpenMM state object
+def get_box_vectors_Bohr( state, nm_to_bohr ):
+    # this is returned as a list of Openmm Vec3 filled with quantities (value, unit)
+    # convert to unitless list to pass to Psi4
+    box_temp = state.getPeriodicBoxVectors()
+    box=[]
+    for i in range(3):
+        box.append( [ box_temp[i][0]._value * nm_to_bohr , box_temp[i][1]._value * nm_to_bohr, box_temp[i][2]._value * nm_to_bohr ] )
+
+    return box
 

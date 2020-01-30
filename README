@@ -12,4 +12,8 @@ the source code in directory 'QM_MM_source' is linked to our github repository
            export PATH=/nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/bin:$PATH
            export PSI_SCRATCH=~/scratch/
            export PYTHONPATH=/nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/lib:$PYTHONPATH
-         
+
+
+Currently, the customized OpenMM code is modified from the base OpenMM-7.4.0 release (September, 2019)
+
+Currently, the customized Psi4 code is modified from the base Psi4 v1.3.2 release (May 2019)      

@@ -25,13 +25,31 @@ Summary of Tests:
 
    a collection of tests for different PMEgrid/cutoff and angular/radial quadrature settings can be run with the run_tests.sh script
 
+3) RKS_test_h2o_5Qfield:
+   similar to 2) but now a water molecule is in the ion field.  Demonstrates that good agreement can be achieved with purely numerical/PME external potential and no analytic embedding,
+   using very large PME grid=375
 
-3) UKS_test_Li_5Qfield:
+4) UKS_test_Li_5Qfield:
    This is similar to test 2), but for open-shell Li atom.  The ion field is the same, and the closest 3 ions are treated analytically, and the two farthest are incorporated
    by the OpenMM computed external potential.  This tests the quadrature implementation in the Unrestricted-Kohn Sham code
 
 
-4) PME_test_ion_pair_QMregion_exclude:
+5) PME_test_ion_pair_QMregion_exclude:
    This is a direct test of the evaluation of the external potential on the PME grid by OpenMM.  This example is for a box with two Li-I ion pairs,
    and prints out the external potential on the PME grid evaluated with the full PME sum compared to a direct "real-space" evaluation of the potential on the grid
 
+6) PME_test_water_droplet
+   Similar to 5), this is a direct test of the evaluation of the external potential on the PME grid for a ~1nm water droplet.  Note that the box lengths are very large,
+   to minimize contribution of water droplet images (which aren't considered in the reference benchmark).  Also the cutoff is large enough that all water molecules should
+   be including in computing real-space Ewald corrections, so that potential is accurate at all grid points.
+
+7) test_bulk_water
+   this is a test of one water QM in bulk water MM.  Two calculations are conducted, first with no analytic MM embedding, and second with 3 water molecules included in analytic embedding.
+   There is good agreement between the calculations when a large PME grid=425 is used.  A third calculation tests a different interpolation scheme (projecting on the PME grid instead of real-space projection),
+   which should exhibit perfect agreement with the first calculation
+
+8) test_water_droplet_orthorhombic_box
+   this is a similar system to 6), but tests a water droplet in both a cubic box as well as an orthorhombic (hexagonal) box.  The point is to check the PME calculation/interpolation scheme
+   for non-cubic, non-rectangular simulation boxes. The new interpolation method (projecting to PME grid) is general to non-orthorhombic boxes, and there is good agreement between the calculations
+   when a sufficiently large PME grid=500 is used.  Note that the box sizes have been increased somewhat to make the systems more similar, since the periodicity is slightly different with the 
+   different box geometries

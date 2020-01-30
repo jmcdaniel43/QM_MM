@@ -1,0 +1,18 @@
+molecule h2o {
+O	30.275	30.306	30.18
+H	29.677	30.07	30.945
+H	30.855	29.523	29.956
+symmetry c1
+no_reorient
+no_com
+}
+
+set {
+basis aug-cc-pvdz
+dft_spherical_points 2702
+dft_radial_points 89
+scf_type df
+}
+
+energy('PBE')
+

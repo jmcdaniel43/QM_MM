@@ -1,0 +1,260 @@
+ searching for QM neighbors from system neighbor list ... done searching for QM neighbors
+*** tstart() called on login7-d1.pace.gatech.edu
+*** at Thu Jan 23 17:54:15 2020
+
+   => Loading Basis Set <=
+
+    Name: AUG-CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1 entry HE         line    54 file /nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/share/psi4/basis/aug-cc-pvdz.gbs 
+
+including vext in nuclear repulsion energy
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              RKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Geometry (in Angstrom), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         HE          30.000000000000    30.000000000000    30.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.00156  C =      0.00156 [cm^-1]
+  Rotational constants: A = ************  B =     46.76392  C =     46.76392 [MHz]
+  Nuclear repulsion =   -0.027980825669259
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is CORE.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 5
+    Number of basis function: 9
+    Number of Cartesian functions: 9
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: PBE <= 
+
+    PBE GGA Exchange-Correlation Functional
+
+    J.P. Perdew et. al., Phys. Rev. Lett., 77(18), 3865-3868, 1996
+
+
+    Deriv               =              1
+    GGA                 =           TRUE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000     XC_GGA_X_PBE
+
+   => Correlation Functionals <=
+
+    1.0000     XC_GGA_C_PBE
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           NONE
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             89
+    Spherical Points       =           2702
+    Total Points           =         235068
+    Total Blocks           =           1763
+    Max Points             =            256
+    Max Functions          =              9
+    Weights Tolerance      =       1.00E-15
+
+   => Loading Basis Set <=
+
+    Name: (AUG-CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1 entry HE         line    39 file /nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A          9       9       0       0       0       0
+   -------------------------------------------------------
+    Total       9       9       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.305 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               1
+    Memory [MiB]:               312
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):       0.0000
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (AUG-CC-PVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 9
+    Number of basis function: 23
+    Number of Cartesian functions: 25
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  Cached 100.0% of DFT collocation blocks in 0.061 [GiB].
+
+   => External Potential Field:  <= 
+
+    > Charges [a.u.] < 
+
+              Z          x          y          z
+        2.00000   33.00000   30.00000   30.00000
+       -1.00000   25.90000   25.00000   30.00000
+       -1.00000   36.10000   35.00000   30.00000
+
+  Old nuclear repulsion        =   -0.027980825669259
+  Additional nuclear repulsion =    0.407707246463530
+  Total nuclear repulsion      =    0.379726420794271
+
+  Minimum eigenvalue in the overlap matrix is 1.7542681229E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Core (One-Electron) Hamiltonian.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-RKS iter   1:    -2.76603866379324   -2.76604e+00   5.57702e-02 DIIS
+   @DF-RKS iter   2:    -2.86506731140589   -9.90286e-02   2.45538e-02 DIIS
+   @DF-RKS iter   3:    -2.89034176198949   -2.52745e-02   6.29078e-04 DIIS
+   @DF-RKS iter   4:    -2.89036101951484   -1.92575e-05   2.81265e-05 DIIS
+   @DF-RKS iter   5:    -2.89036104870586   -2.91910e-08   2.77146e-06 DIIS
+   @DF-RKS iter   6:    -2.89036104895169   -2.45825e-10   4.11952e-08 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Doubly Occupied:                                                      
+
+       1A     -0.772439  
+
+    Virtual:                                                              
+
+       2A     -0.115268     3A      0.160968     4A      0.176247  
+       5A      0.177791     6A      1.181796     7A      2.410031  
+       8A      2.420383     9A      2.420902  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+
+  @DF-RKS Final Energy:    -2.89036104895169
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.3797264207942709
+    One-Electron Energy =                  -4.2731588365756190
+    Two-Electron Energy =                   2.0163530730703316
+    DFT Exchange-Correlation Energy =      -1.0132817062406725
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                         -2.8903610489516893
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:   113.3836      Y:   113.3836      Z:   113.3836
+
+  Electronic Dipole Moment: [e a0]
+     X:  -113.4842      Y:  -113.3855      Z:  -113.3836
+
+  Dipole Moment: [e a0]
+     X:    -0.1006      Y:    -0.0019      Z:    -0.0000     Total:     0.1006
+
+  Dipole Moment: [D]
+     X:    -0.2557      Y:    -0.0048      Z:    -0.0000     Total:     0.2557
+
+
+*** tstop() called on login7-d1.pace.gatech.edu at Thu Jan 23 17:54:24 2020
+Module time:
+	user time   =       2.40 seconds =       0.04 minutes
+	system time =       0.14 seconds =       0.00 minutes
+	total time  =          9 seconds =       0.15 minutes
+Total time:
+	user time   =       2.40 seconds =       0.04 minutes
+	system time =       0.14 seconds =       0.00 minutes
+	total time  =          9 seconds =       0.15 minutes
+Setting charge and spin in QM calculations :  0 1
+Setting charge and spin in QM calculations :  0 1
+molecule = <psi4.core.Molecule object at 0x7fffaa1fe6d0>
+pme_grid_size = 80
+vexternal_grid = [0.00178386 0.00183693 0.00189106 ... 0.00169877 0.00165202 0.00160651]
+pmegrid_xyz = [[  0.          0.          0.       ]
+ [  0.          0.          1.4172945]
+ [  0.          0.          2.834589 ]
+ ...
+ [111.9662655 111.9662655 109.1316765]
+ [111.9662655 111.9662655 110.548971 ]
+ [111.9662655 111.9662655 111.9662655]]
+interpolation_method = interpn
+ interpolating nuclei grid .... 
+
+ done interpolating nuclei grid .... 
+
+ interpolating quadature grid .... 
+
+done setting vext
+QM energy  -2.8903610489516893
