@@ -1,16 +1,14 @@
 from __future__ import print_function
-#*********** Psi4 Drivers
-import psi4.core as core
-#********** OpenMM Drivers
-from simtk.openmm.app import *
-from simtk.openmm import *
-from simtk.unit import *
-#*********** QM/MM classes
-from QM_MM_classes import *
-#******** this is module that goes with sapt force field files to generate exclusions
-from sapt_exclusions import *
-#***************************
-#from routines import trim_shift_PME_grid
+import sys
+# append path to QM class library
+sys.path.append('/home/mcdanielgroup/data/Jesse/QM_MM/lib/')
+# append path to MM class library
+sys.path.append('/home/mcdanielgroup/data/Jesse/Fixed_Voltage_OpenMM/lib/')
+#********* import QMclass
+from QM_classes import *
+#********* import MMclass
+from MM_classes import *
+
 import numpy as np
 # other stuff
 from sys import stdout
@@ -44,7 +42,7 @@ from datetime import datetime
 #QMatoms=(2,3)
 
 # QM atoms only
-QMatoms=(0,)
+QMatoms_list=(0,)
 # charge and spin
 QMcharge=0
 QMspin=2
@@ -53,25 +51,28 @@ QMspin=2
 # note that QMregion should be ordered ( QMatoms , ... ), otherwise method set_geometry won't work properly.
 # we currently don't have a check for this, as we anticipate that we will eventually generate QMregion automatically
 # from QMatoms using a cutoff distance
-QMregion=(0,1,2,3)
+QMregion_list=(0,1,2,3)
 
 # Make sure QMatoms is subset of QMregion
-if not set(QMatoms).issubset(QMregion) :
+if not set(QMatoms_list).issubset(QMregion_list) :
    print(' QMatoms must be subset of QMregion !!')
    sys.exit()
 
+
+# QMother is the difference between lists ..
+QMother_list=np.setdiff1d( np.array( QMregion_list ) , np.array( QMatoms_list ) )
 #**********************************************************************
 
 
 DFT_functional='PBE'
-pme_grid_size=100
+pme_grid_size=125
 
 # *********************************************************************
 #                     Create MM system object
 #**********************************************************************
 
 # Initialize: Input list of pdb and xml files, and QMregion
-MMsys=MM( pdb_list = [ '../input_files/Li_5ions.pdb', ] , residue_xml_list = [ '../input_files/sapt_residues.xml' , ] , ff_xml_list = [ '../input_files/sapt.xml', ] , QMregion = QMregion  )
+MMsys=MM( pdb_list = [ '../input_files/Li_5ions.pdb', ] , residue_xml_list = [ '../input_files/sapt_residues.xml' , ] , ff_xml_list = [ '../input_files/sapt.xml', ] , QMregion_list = QMregion_list )
 
 # if periodic residue, call this
 #MMsys.set_periodic_residue(True)
@@ -84,7 +85,7 @@ MMsys.setPMEParameters( pme_alpha=2.0 , pme_grid_a=pme_grid_size , pme_grid_b=pm
 MMsys.set_platform('Reference')   # only 'Reference' platform is currently implemented!
 
 # IMPORTANT: generate exclusions for SAPT-FF
-sapt_exclusions = sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.modeller.positions)
+#sapt_exclusions = sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.modeller.positions)
 
 # Umbrella potential on QM atoms
 #MMsys.setumbrella( 'N2', 'grph', 'C100', 2000.0 , 0.4 )   # molecule1, molecule2, atom2,  k (kJ/mol/nm^2) , r0 nm
@@ -102,21 +103,15 @@ quadrature_grid = ( 2702 , 89 )  # spherical points, radial points
 
 QMsys = QM( QMname = 'test' , basis = 'aug-cc-pvdz' , dft_spherical_points = quadrature_grid[0] , dft_radial_points = quadrature_grid[1] , scf_type = 'df' , qmmm='true' )
 
-# Fill QM region with atoms.  Use MMsys to get element types
-QMsys.set_QM_region( MMsys, QMregion, QMatoms )
-
-# initial QM energy, Get QM positions from MMsystem
-positions  = MMsys.get_positions_QM( QMsys )
-
-# set geometry of QM region
-QMsys.set_geometry( positions , charge = QMcharge, spin = QMspin )
+# get elements/charges of QM region atoms from MMsys ...
+element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ QMatoms_list , QMother_list ] )
+# Fill QM region with atoms.
+QMsys.set_QM_region( element_lists , charge_lists , QMatoms_list, QMother_list )
 
 
 #**********************************************************************
 #                     QM/MM Simulation
 #**********************************************************************
-# Get QM positions from MMsystem
-positions  = MMsys.get_positions_QM( QMsys )
 
 #******************* External potential on PME grid ******************
 state = MMsys.simmd.context.getState(getEnergy=True,getForces=True,getVelocities=True,getPositions=True,getVext_grids=True, getPME_grid_positions=True)
@@ -130,8 +125,12 @@ vext_tot = np.array( vext_tot ) / 2625.4996
 #** PME_grid_positions from OpenMM is in nanometers, convert to Bohr for input to Psi4
 PME_grid_positions = np.array( PME_grid_positions ) * 18.89726
 
-# update positions on QMsys
-QMsys.set_geometry( positions , charge = QMcharge , spin = QMspin )
+# Get QM positions from MMsystem and set them in QMsys object
+positions_lists = MMsys.get_positions_for_atom_lists([ QMatoms_list , QMother_list ] )
+QMsys.set_QM_positions( positions_lists )
+
+# set geometry of QM region
+QMsys.set_geometry( charge = QMcharge, spin = QMspin )
 
 # QM calculation
 # 2 options for scipy interpolation: set interpolation_method = "interpn" or "griddata".  "interpn" should be much faster and is for regularly spaced grids

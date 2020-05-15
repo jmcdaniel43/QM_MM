@@ -1,16 +1,13 @@
 from __future__ import print_function
-#*********** Psi4 Drivers
-import psi4.core as core
-#********** OpenMM Drivers
-from simtk.openmm.app import *
-from simtk.openmm import *
-from simtk.unit import *
-#*********** QM/MM classes
-from QM_MM_classes import *
-#******** this is module that goes with sapt force field files to generate exclusions
-from electrode_sapt_exclusions import *
-#***************************
-#from routines import trim_shift_PME_grid
+import sys
+sys.path.append('/home/mcdanielgroup/data/Jesse/QM_MM/lib/')
+# append path to MM class library
+sys.path.append('/home/mcdanielgroup/data/Jesse/Fixed_Voltage_OpenMM/lib/')
+#********* import QMclass
+from QM_classes import *
+#********* import MMclass
+from MM_classes import *
+
 import numpy as np
 # other stuff
 import sys
@@ -75,6 +72,8 @@ if not set(QMatoms_list).issubset(QMregion_list) :
    print(' QMatoms_list must be subset of QMregion_list !!')
    sys.exit()
 
+# QMother is the difference between lists ..
+QMother_list=np.setdiff1d( np.array( QMregion_list ) , np.array( QMatoms_list ) )
 #**********************************************************************
 
 
@@ -85,9 +84,6 @@ pme_grid_size=425
 # *********************************************************************
 #                     Create MM system object
 #**********************************************************************
-
-# electrode names used to exclude intra-electrode non-bonded interactions ...
-cathode_name="cath"; anode_name = "anod"
 
 # Initialize: Input list of pdb and xml files, and QMregion_list
 MMsys=MM( pdb_list = [ 'spce.pdb', ] , residue_xml_list = [ 'residues.xml' , ] , ff_xml_list = [ 'spce.xml', ] , QMregion_list = QMregion_list  )
@@ -104,7 +100,6 @@ MMsys.set_platform('Reference')   # only 'Reference' platform is currently imple
 
 # IMPORTANT: generate exclusions for SAPT-FF
 
-print(" turned off electrode exclusions!! ")
 #exclusions = electrode_sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.modeller.positions, cathode_name , anode_name)
 
 # Umbrella potential on QM atoms
@@ -124,8 +119,10 @@ quadrature_grid = ( 2702 , 89 )  # spherical points, radial points
 
 QMsys = QM( QMname = 'test' , basis = 'aug-cc-pvdz' , dft_spherical_points = quadrature_grid[0] , dft_radial_points = quadrature_grid[1] , scf_type = 'df' , qmmm='true' )
 
-# Fill QM region with atoms.  Use MMsys to get element types
-QMsys.set_QM_region( MMsys, QMregion_list, QMatoms_list )
+# get elements/charges of QM region atoms from MMsys ...
+element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ QMatoms_list , QMother_list ] )
+# Fill QM region with atoms.
+QMsys.set_QM_region( element_lists , charge_lists , QMatoms_list, QMother_list )
 
 
 #**********************************************************************
@@ -151,7 +148,8 @@ box = get_box_vectors_Bohr( state , nm_to_bohr )
 
 
 # Get QM positions from MMsystem and set them in QMsys object
-QMsys.set_QM_positions( MMsys )
+positions_lists = MMsys.get_positions_for_atom_lists([ QMatoms_list , QMother_list ] )
+QMsys.set_QM_positions( positions_lists )
 
 # set geometry of QM region
 QMsys.set_geometry( charge = QMcharge, spin = QMspin )

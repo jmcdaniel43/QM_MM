@@ -1,16 +1,15 @@
 from __future__ import print_function
-#*********** Psi4 Drivers
-import psi4.core as core
-#********** OpenMM Drivers
-from simtk.openmm.app import *
-from simtk.openmm import *
-from simtk.unit import *
-#*********** QM/MM classes
-from QM_MM_classes import *
-#******** this is module that goes with sapt force field files to generate exclusions
-from sapt_exclusions import *
-#***************************
-#from routines import trim_shift_PME_grid
+
+import sys
+sys.path.append('/home/mcdanielgroup/data/Jesse/QM_MM/lib/')
+# append path to MM class library
+sys.path.append('/home/mcdanielgroup/data/Jesse/Fixed_Voltage_OpenMM/lib/')
+#********* import QMclass
+from QM_classes import *
+#********* import MMclass
+from MM_classes import *
+
+from routines import *
 import numpy as np
 # other stuff
 from sys import stdout
@@ -55,7 +54,7 @@ quadrature_grid = ( int(args.quad_angle) , int(args.quad_radial) )
 #QMatoms=(2,3)
 
 # QM atoms only
-QMatoms=(0,)
+QMatoms_list=(0,)
 # charge and spin
 QMcharge=0
 QMspin=1
@@ -65,13 +64,15 @@ QMspin=1
 # note that QMregion should be ordered ( QMatoms , ... ), otherwise method set_geometry won't work properly.
 # we currently don't have a check for this, as we anticipate that we will eventually generate QMregion automatically
 # from QMatoms using a cutoff distance
-QMregion=(0,)
+QMregion_list=(0,)
 
 # Make sure QMatoms is subset of QMregion
-if not set(QMatoms).issubset(QMregion) :
+if not set(QMatoms_list).issubset(QMregion_list) :
    print(' QMatoms must be subset of QMregion !!')
    sys.exit()
 
+# QMother is the difference between lists ..
+QMother_list=np.setdiff1d( np.array( QMregion_list ) , np.array( QMatoms_list ) )
 #**********************************************************************
 
 
@@ -82,7 +83,7 @@ DFT_functional='PBE'
 #**********************************************************************
 
 # Initialize: Input list of pdb and xml files, and QMregion
-MMsys=MM( pdb_list = [ '../input_files/He_5ions.pdb', ] , residue_xml_list = [ '../input_files/sapt_residues.xml' , ] , ff_xml_list = [ '../input_files/sapt.xml', ] , QMregion = QMregion , cutoff = cutoff  )
+MMsys=MM( pdb_list = [ '../input_files/He_5ions.pdb', ] , residue_xml_list = [ '../input_files/sapt_residues.xml' , ] , ff_xml_list = [ '../input_files/sapt.xml', ] , QMregion_list = QMregion_list , cutoff = cutoff  )
 
 # if periodic residue, call this
 #MMsys.set_periodic_residue(True)
@@ -95,7 +96,7 @@ MMsys.setPMEParameters( pme_alpha=2.0 , pme_grid_a=pme_grid_size , pme_grid_b=pm
 MMsys.set_platform('Reference')   # only 'Reference' platform is currently implemented!
 
 # IMPORTANT: generate exclusions for SAPT-FF
-sapt_exclusions = sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.modeller.positions)
+#sapt_exclusions = sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.modeller.positions)
 
 # Umbrella potential on QM atoms
 #MMsys.setumbrella( 'N2', 'grph', 'C100', 2000.0 , 0.4 )   # molecule1, molecule2, atom2,  k (kJ/mol/nm^2) , r0 nm
@@ -110,22 +111,24 @@ sapt_exclusions = sapt_generate_exclusions(MMsys.simmd, MMsys.system, MMsys.mode
 
 QMsys = QM( QMname = 'test' , basis = 'aug-cc-pvdz' , dft_spherical_points = quadrature_grid[0] , dft_radial_points = quadrature_grid[1] , scf_type = 'df' , qmmm='true' )
 
-# Fill QM region with atoms.  Use MMsys to get element types
-QMsys.set_QM_region( MMsys, QMregion, QMatoms )
+# get elements/charges of QM region atoms from MMsys ...
+element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ QMatoms_list , QMother_list ] )
+# Fill QM region with atoms.
+QMsys.set_QM_region( element_lists , charge_lists , QMatoms_list, QMother_list )
 
-# initial QM energy, Get QM positions from MMsystem
-positions  = MMsys.get_positions_QM( QMsys )
+# Get QM positions from MMsystem and set them in QMsys object
+positions_lists = MMsys.get_positions_for_atom_lists([ QMatoms_list , QMother_list ] )
+QMsys.set_QM_positions( positions_lists )
 
 # set geometry of QM region
-QMsys.set_geometry( positions , charge = QMcharge, spin = QMspin )
-
+QMsys.set_geometry( charge = QMcharge, spin = QMspin )
 
 #***************** test Psi4 quadrature **********************
 #  input MMenv to Psi4, Psi4 will calculate the Coulomb potential
 #  on the quadrature grid from this MMenv, and will use this
 #  in the DFT quadrature.  This is for internal testing, so no field input from OpenMM...
 #*************************************************************
-MMenv = create_MM_env_full(  MMsys , QMatoms )
+MMenv = create_MM_env_full(  MMsys , QMatoms_list )
 
 #print( 'MMenv ')
 #print( MMenv )

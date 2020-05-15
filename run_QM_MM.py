@@ -66,6 +66,8 @@ if not set(QMatoms_list).issubset(QMregion_list) :
    print(' QMatoms_list must be subset of QMregion_list !!')
    sys.exit()
 
+# QMother is the difference between lists ..
+QMother_list=np.setdiff1d( np.array( QMregion_list ) , np.array( QMatoms_list ) )
 #**********************************************************************
 
 
@@ -111,8 +113,10 @@ quadrature_grid = ( 2702 , 89 )  # spherical points, radial points
 
 QMsys = QM( QMname = 'test' , basis = 'aug-cc-pvdz' , dft_spherical_points = quadrature_grid[0] , dft_radial_points = quadrature_grid[1] , scf_type = 'df' , qmmm='true' )
 
-# Fill QM region with atoms.  Use MMsys to get element types
-QMsys.set_QM_region( MMsys, QMregion_list, QMatoms_list )
+# get elements/charges of QM region atoms from MMsys ...
+element_lists , charge_lists = MMsys.get_element_charge_for_atom_list( [ QMatoms_list , QMother_list ] )
+# Fill QM region with atoms.
+QMsys.set_QM_region( element_lists , charge_lists , QMatoms_list, QMother_list )
 
 
 #**********************************************************************
@@ -137,7 +141,8 @@ PME_grid_positions = np.array( PME_grid_positions ) * nm_to_bohr
 box = get_box_vectors_Bohr( state , nm_to_bohr )
 
 # Get QM positions from MMsystem and set them in QMsys object
-QMsys.set_QM_positions( MMsys )
+positions_lists = MMsys.get_positions_for_atom_lists([ QMatoms_list , QMother_list ] )
+QMsys.set_QM_positions( positions_lists )
 
 # set geometry of QM region
 QMsys.set_geometry( charge = QMcharge, spin = QMspin )

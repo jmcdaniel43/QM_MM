@@ -3,6 +3,7 @@ psi4                      1.3.2+ecbda83    py37h31b3128_0    psi4
 
 these benchmarks incorporate analytic QM/MM interactions from embedded MM point charges
 
+NOTE:  Most of these test require libraries from the Fixed_Voltage_OpenMM repository on Github...
 
 Summary of Tests:
 
@@ -53,3 +54,7 @@ Summary of Tests:
    for non-cubic, non-rectangular simulation boxes. The new interpolation method (projecting to PME grid) is general to non-orthorhombic boxes, and there is good agreement between the calculations
    when a sufficiently large PME grid=500 is used.  Note that the box sizes have been increased somewhat to make the systems more similar, since the periodicity is slightly different with the 
    different box geometries
+
+9) FV_QM_MM_example
+   this is an example of a Fixed-Voltage QM/MM simulation for BMIM/BF4/acetonitrile electrolyte with carbon electrodes.  An acetonitrile molecule is the QM region, 
+   charges are solved using the Poisson solver, and the QM calculation is done with the full electrostatics of the cell

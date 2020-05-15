@@ -1,13 +1,15 @@
- searching for QM neighbors from system neighbor list ... done searching for QM neighbors
-*** tstart() called on login7-d1.pace.gatech.edu
-*** at Thu Jan 23 17:54:15 2020
+ searching for QM neighbors from system neighbor list ...
+ done searching for QM neighbors
+
+*** tstart() called on chem-l-mcdaniel03
+*** at Wed May 13 22:31:42 2020
 
    => Loading Basis Set <=
 
     Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1 entry HE         line    54 file /nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1 entry HE         line    54 file /home/mcdanielgroup/build/psi4/psi4/bin/share/psi4/basis/aug-cc-pvdz.gbs 
 
 including vext in nuclear repulsion energy
 
@@ -32,7 +34,7 @@ including vext in nuclear repulsion energy
 
   Rotational constants: A = ************  B =      0.00156  C =      0.00156 [cm^-1]
   Rotational constants: A = ************  B =     46.76392  C =     46.76392 [MHz]
-  Nuclear repulsion =   -0.027980825669259
+  Nuclear repulsion =   -0.027972059972748
 
   Charge       = 0
   Multiplicity = 1
@@ -106,7 +108,7 @@ including vext in nuclear repulsion energy
     Name: (AUG-CC-PVDZ AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
-    atoms 1 entry HE         line    39 file /nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+    atoms 1 entry HE         line    39 file /home/mcdanielgroup/build/psi4/psi4/bin/share/psi4/basis/def2-qzvpp-jkfit.gbs 
 
   ==> Pre-Iterations <==
 
@@ -155,9 +157,9 @@ including vext in nuclear repulsion energy
        -1.00000   25.90000   25.00000   30.00000
        -1.00000   36.10000   35.00000   30.00000
 
-  Old nuclear repulsion        =   -0.027980825669259
+  Old nuclear repulsion        =   -0.027972059972748
   Additional nuclear repulsion =    0.407707246463530
-  Total nuclear repulsion      =    0.379726420794271
+  Total nuclear repulsion      =    0.379735186490782
 
   Minimum eigenvalue in the overlap matrix is 1.7542681229E-01.
   Using Symmetric Orthogonalization.
@@ -168,12 +170,12 @@ including vext in nuclear repulsion energy
 
                            Total Energy        Delta E     RMS |[F,P]|
 
-   @DF-RKS iter   1:    -2.76603866379324   -2.76604e+00   5.57702e-02 DIIS
-   @DF-RKS iter   2:    -2.86506731140589   -9.90286e-02   2.45538e-02 DIIS
-   @DF-RKS iter   3:    -2.89034176198949   -2.52745e-02   6.29078e-04 DIIS
-   @DF-RKS iter   4:    -2.89036101951484   -1.92575e-05   2.81265e-05 DIIS
-   @DF-RKS iter   5:    -2.89036104870586   -2.91910e-08   2.77146e-06 DIIS
-   @DF-RKS iter   6:    -2.89036104895169   -2.45825e-10   4.11952e-08 DIIS
+   @DF-RKS iter   1:    -2.76603054239481   -2.76603e+00   5.57701e-02 DIIS
+   @DF-RKS iter   2:    -2.86505884395310   -9.90283e-02   2.45538e-02 DIIS
+   @DF-RKS iter   3:    -2.89033320371211   -2.52744e-02   6.29076e-04 DIIS
+   @DF-RKS iter   4:    -2.89035246116784   -1.92575e-05   2.81268e-05 DIIS
+   @DF-RKS iter   5:    -2.89035249035949   -2.91917e-08   2.77148e-06 DIIS
+   @DF-RKS iter   6:    -2.89035249060532   -2.45826e-10   4.11951e-08 DIIS
   Energy and wave function converged.
 
 
@@ -188,25 +190,25 @@ including vext in nuclear repulsion energy
 
     Virtual:                                                              
 
-       2A     -0.115268     3A      0.160968     4A      0.176247  
-       5A      0.177791     6A      1.181796     7A      2.410031  
-       8A      2.420383     9A      2.420902  
+       2A     -0.115267     3A      0.160968     4A      0.176248  
+       5A      0.177792     6A      1.181796     7A      2.410025  
+       8A      2.420391     9A      2.420903  
 
     Final Occupation by Irrep:
               A 
     DOCC [     1 ]
 
-  @DF-RKS Final Energy:    -2.89036104895169
+  @DF-RKS Final Energy:    -2.89035249060532
 
    => Energetics <=
 
-    Nuclear Repulsion Energy =              0.3797264207942709
-    One-Electron Energy =                  -4.2731588365756190
-    Two-Electron Energy =                   2.0163530730703316
-    DFT Exchange-Correlation Energy =      -1.0132817062406725
+    Nuclear Repulsion Energy =              0.3797351864907820
+    One-Electron Energy =                  -4.2731591972220846
+    Two-Electron Energy =                   2.0163537956803093
+    DFT Exchange-Correlation Energy =      -1.0132822755543265
     Empirical Dispersion Energy =           0.0000000000000000
     VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                         -2.8903610489516893
+    Total Energy =                         -2.8903524906053200
 
 Computation Completed
 
@@ -228,27 +230,27 @@ Properties computed using the SCF density matrix
      X:    -0.2557      Y:    -0.0048      Z:    -0.0000     Total:     0.2557
 
 
-*** tstop() called on login7-d1.pace.gatech.edu at Thu Jan 23 17:54:24 2020
+*** tstop() called on chem-l-mcdaniel03 at Wed May 13 22:31:44 2020
 Module time:
-	user time   =       2.40 seconds =       0.04 minutes
-	system time =       0.14 seconds =       0.00 minutes
-	total time  =          9 seconds =       0.15 minutes
+	user time   =       1.86 seconds =       0.03 minutes
+	system time =       0.08 seconds =       0.00 minutes
+	total time  =          2 seconds =       0.03 minutes
 Total time:
-	user time   =       2.40 seconds =       0.04 minutes
-	system time =       0.14 seconds =       0.00 minutes
-	total time  =          9 seconds =       0.15 minutes
+	user time   =       1.86 seconds =       0.03 minutes
+	system time =       0.08 seconds =       0.00 minutes
+	total time  =          2 seconds =       0.03 minutes
+done setting reference platform for QM/MM ...
 Setting charge and spin in QM calculations :  0 1
-Setting charge and spin in QM calculations :  0 1
-molecule = <psi4.core.Molecule object at 0x7fffaa1fe6d0>
-pme_grid_size = 80
-vexternal_grid = [0.00178386 0.00183693 0.00189106 ... 0.00169877 0.00165202 0.00160651]
-pmegrid_xyz = [[  0.          0.          0.       ]
- [  0.          0.          1.4172945]
- [  0.          0.          2.834589 ]
+molecule = <psi4.core.Molecule object at 0x7fa338d4d780>
+pme_grid_size = 85
+vexternal_grid = [0.00178386 0.00183378 0.00188464 ... 0.00170488 0.00166058 0.00161739]
+pmegrid_xyz = [[  0.           0.           0.        ]
+ [  0.           0.           1.33392424]
+ [  0.           0.           2.66784847]
  ...
- [111.9662655 111.9662655 109.1316765]
- [111.9662655 111.9662655 110.548971 ]
- [111.9662655 111.9662655 111.9662655]]
+ [112.04963576 112.04963576 109.38178729]
+ [112.04963576 112.04963576 110.71571153]
+ [112.04963576 112.04963576 112.04963576]]
 interpolation_method = interpn
  interpolating nuclei grid .... 
 
@@ -257,4 +259,4 @@ interpolation_method = interpn
  interpolating quadature grid .... 
 
 done setting vext
-QM energy  -2.8903610489516893
+QM energy  -2.89035249060532

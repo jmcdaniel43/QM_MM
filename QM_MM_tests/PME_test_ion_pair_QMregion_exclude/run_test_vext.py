@@ -7,8 +7,6 @@ from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
 from sys import stdout
-#******** this is module that goes with sapt force field files to generate exclusions
-from sapt_exclusions import *
 #***************************
 #******* this module has routines for texting vext
 from routines import *
@@ -62,7 +60,7 @@ simmd.context.setPositions(modeller.positions)
 #************************************************
 #         IMPORTANT: generate exclusions for SAPT-FF
 #
-sapt_exclusions = sapt_generate_exclusions(simmd,system,modeller.positions)
+#sapt_exclusions = sapt_generate_exclusions(simmd,system,modeller.positions)
 #
 #************************************************
 

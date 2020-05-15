@@ -1,13 +1,10 @@
 #!/bin/bash
 
-module load intel/19.0
-module load anaconda3
+source activate Jesse_QM_MM
 
-source activate gcc72
-
-export PATH=/nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/bin:$PATH
-export PSI_SCRATCH=~/scratch/
-export PYTHONPATH=/nv/hp22/jmcdaniel43/data/Programs/psi4/psi4/bin/lib:$PYTHONPATH
+export PATH=/home/mcdanielgroup/build/psi4/psi4/bin/bin:$PATH
+export PSI_SCRATCH=/home/mcdanielgroup/data/scratch/
+export PYTHONPATH=/home/mcdanielgroup/build/psi4/psi4/bin/lib:$PYTHONPATH
 
 #job name
 jobname="He_5Q"
@@ -19,7 +16,7 @@ quad_angular=( 2702  )
 quad_radial=(    89 )
 
 # pairs of PMEgrid/cutoff settings
-PME_grid=( 62  82 )
+PME_grid=( 65  85 )
 cutoff=( 1.2 0.8 ) # in nanometers ...
 
 i=0
