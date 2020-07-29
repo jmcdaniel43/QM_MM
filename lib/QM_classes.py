@@ -1,9 +1,16 @@
 from sys import stdout
+
 import psi4
 import psi4.core as core
+
 from psi4.driver import *
+
 from scipy.special import erf
 from scipy.special import erfc
+
+from psi4.driver.procrouting.qmmm.grid_interface import project_to_PME_grid
+from psi4.driver.procrouting.qmmm.grid_interface import calculate_inverse_box_vectors
+
 import sys
 
 import time
@@ -176,9 +183,9 @@ class QM(object):
     #*******************************************
     def set_PMEgrid_xyz( self , box ):
           # getting increments in every dimension
-          xs = np.linspace( 0 , box[0][0] , self.pme_grid_size , endpoint=False )
-          ys = np.linspace( 0 , box[1][1] , self.pme_grid_size , endpoint=False )
-          zs = np.linspace( 0 , box[2][2] , self.pme_grid_size , endpoint=False )
+          xs = np.linspace( 0 , sum([box[0][i]**2 for i in range(3)])**0.5 , self.pme_grid_size , endpoint=False )
+          ys = np.linspace( 0 , sum([box[1][i]**2 for i in range(3)])**0.5 , self.pme_grid_size , endpoint=False )
+          zs = np.linspace( 0 , sum([box[2][i]**2 for i in range(3)])**0.5 , self.pme_grid_size , endpoint=False )
           # collecting meshgrid arrays
           X, Y, Z = np.meshgrid( xs , ys , zs , indexing='ij' )
           # flattening meshgrid arrays
@@ -347,50 +354,4 @@ def get_box_vectors_Bohr( state ):
         box.append( [ box_temp[i][0]._value * nm_to_bohr , box_temp[i][1]._value * nm_to_bohr, box_temp[i][2]._value * nm_to_bohr ] )
 
     return box
-
-#*********************************
-# project real space points to PME grid
-# this algorithm is identical to that used in method
-# 'pme_update_grid_index_and_fraction' in OpenMM source code,
-# ReferencePME.cpp.  See comments in ReferencePME.cpp
-# about how algorithm works ...
-#*********************************
-def project_to_PME_grid( real_grid_points , inverse_box , pme_grid_size ):
-    
-    #*************** naive code with loops , let's keep this for readability....
-    #scaled_grid_points=[]
-    #for i in range(real_grid_points.shape[0]):
-    #    xyz_scaled=[]
-    #    for d in range(3):
-    #        t = real_grid_points[i][0] * inverse_box[0][d] + real_grid_points[i][1] * inverse_box[1][d] + real_grid_points[i][2] * inverse_box[2][d]
-    #        t = ( t - floor(t) ) * pme_grid_size
-    #        ti = int(t)
-    #        fraction = t - ti
-    #        xyz_scaled.append( ti % pme_grid_size + fraction )
-    #    scaled_grid_points.append( xyz_scaled )
-    #scaled_grid_points = np.array( scaled_grid_points )
-
-    #************ efficient numpy code
-    scaled_grid_points = np.matmul( real_grid_points , inverse_box )
-    scaled_grid_points = ( scaled_grid_points - np.floor( scaled_grid_points ) ) * pme_grid_size
-    scaled_grid_points = np.mod( scaled_grid_points.astype(int) , pme_grid_size ) + ( scaled_grid_points - scaled_grid_points.astype(int) )
-
-    return scaled_grid_points
-
-
-#**********************************
-# this is identical to OpenMM method in ReferencePME.cpp
-# void invert_box_vectors(const Vec3 boxVectors[3], Vec3 recipBoxVectors[3])
-# assumes triclinic box has specific form.
-#**********************************
-def calculate_inverse_box_vectors( boxVectors ):
-    determinant = boxVectors[0][0] * boxVectors[1][1] * boxVectors[2][2]
-    scale = 1.0/determinant
-    recipBoxVectors=[]
-    recipBoxVectors.append( [ boxVectors[1][1]*boxVectors[2][2], 0, 0 ]  )
-    recipBoxVectors.append( [ -boxVectors[1][0]*boxVectors[2][2], boxVectors[0][0]*boxVectors[2][2], 0 ] )
-    recipBoxVectors.append( [ boxVectors[1][0]*boxVectors[2][1]-boxVectors[1][1]*boxVectors[2][0], -boxVectors[0][0]*boxVectors[2][1], boxVectors[0][0]*boxVectors[1][1] ] )
-    recipBoxVectors = np.array(recipBoxVectors)*scale
-
-    return recipBoxVectors
 
