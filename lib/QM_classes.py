@@ -49,7 +49,8 @@ class atom_QM(object):
 
 #  This class is used to initialize a QM simulation
 class QM(object):
-    def __init__(self, QMname, basis, dft_spherical_points , dft_radial_points , scf_type , qmmm_ewald='true' , **kwargs  ):
+    def __init__( self , **kwargs ):
+
           # setup options for DMA
           radii=['H',0.53,'C',0.53,'N',0.53,'O',0.53]
 
@@ -58,17 +59,46 @@ class QM(object):
           core.set_local_option('GDMA', 'GDMA_MULTIPOLE_UNITS', 'AU' )
           core.set_local_option('GDMA', 'GDMA_SWITCH', 0.0 )
 
-          # name
-          self.molname = QMname
-          self.basis = basis
+          #storing inputs for later
+          self.inputs = kwargs
+
+          # reading inputs from **kwargs
+          if 'out_dir' in kwargs :
+              self.molname = kwargs['out_dir'].split()[0]
+          if 'basis_set' in kwargs :
+              self.basis = kwargs['basis_set']              
+          if 'functional' in kwargs :
+              self.DFT_functional = kwargs['functional']              
+          if 'quadrature_spherical' in kwargs :
+              self.dft_spherical_points = int(kwargs['quadrature_spherical'])
+          if 'quadrature_radial' in kwargs :
+              self.dft_radial_points = int(kwargs['quadrature_radial'])
+          if 'qmmm_ewald' in kwargs :
+              self.qmmm_ewald = kwargs['qmmm_ewald']
+          if 'qmmm_tare' in kwargs :
+              self.qmmm_tare = eval(kwargs['qmmm_tare'])
+          if 'QMcharge' in kwargs :
+              self.QMcharge = int(kwargs['QMcharge'])
+          if 'QMspin' in kwargs :
+              self.QMspin = int(kwargs['QMspin'])
+
+          # setting scf_type
+          self.scf_type = 'df'
 
           # set basis , quadrature settings, scf_type, qmmm ...
-          psi4.set_options( {'basis' : basis , 'dft_spherical_points' : dft_spherical_points , 'dft_radial_points' : dft_radial_points , 'scf_type' : scf_type , 'qmmm' : str(bool(qmmm_ewald)).lower()  } )
+          psi4.set_options( {'basis' : self.basis , 'dft_spherical_points' : self.dft_spherical_points , 'dft_radial_points' : self.dft_radial_points , 'scf_type' : self.scf_type , 'qmmm' : self.qmmm_ewald.lower()  } )
 
           # setting pme options
-          if qmmm_ewald:
-              self.pme_grid_size = kwargs['pme_grid_size']
-              self.pme_alpha = kwargs['pme_alpha']
+          if self.qmmm_ewald:
+              self.pme_grid_size = int(kwargs['pme_grid_size'])
+              self.pme_alpha = float(kwargs['pme_alpha'])
+
+    #**********************************
+    # Reinitializes the QM system object
+    # kwargs is a dictionary of arguments
+    #**********************************
+    def reset( self , **kwargs ):
+          self.__init__( **kwargs )
 
     #**********************************
     # QMatoms_list is tuple specifying atom indices of QM atom
@@ -133,9 +163,9 @@ class QM(object):
     #*************************************
     # here we setup the Psi4 geometry class
     # geomlist input is a 2D list ( natoms x 4 ) with type , x , y , z for every atom
-    def set_geometry(self, charge, spin ):
-          print("Setting charge and spin in QM calculations : " , charge , spin )
-          if spin > 1:
+    def set_geometry( self ):
+          print("Setting charge and spin in QM calculations : " , self.QMcharge , self.QMspin )
+          if self.QMspin > 1:
              # set UKS
              core.set_local_option('SCF','REFERENCE','UKS')
 
@@ -149,7 +179,7 @@ class QM(object):
  
           # construct geometry string
           geometrystring=' \n '
-          geometrystring= geometrystring + str(charge) + " " + str(spin) +" \n"
+          geometrystring= geometrystring + str(self.QMcharge) + " " + str(self.QMspin) +" \n"
           # don't reorient molecule.  Don't want symmetry anyway for DMA
           geometrystring= geometrystring + " noreorient  \n  " + " nocom  \n  "
 
@@ -214,12 +244,11 @@ class QM(object):
     # from the vext claculation in reciprocal space.
     # input is the DFT functional method (a string)
     #*******************************************
-    def get_PMEexclude( self , DFT_functional ):
-          self.DFT_functional = DFT_functional
+    def get_PMEexclude( self ):
           # collecting the DFT quadrature grid
-          sup = dft.build_superfunctional( self.DFT_functional , True )[0]
+          sup_func = dft.build_superfunctional( self.DFT_functional , True )[0]
           basis = core.BasisSet.build( self.geometry , "ORBITAL" , self.basis )
-          Vpot = core.VBase.build( basis , sup , "RV" )
+          Vpot = core.VBase.build( basis , sup_func , "RV" )
           Vpot.initialize()
           x, y, z, w = Vpot.get_np_xyzw()
           quadrature_grid=[]
@@ -328,6 +357,16 @@ class QM(object):
           alpha_dr = pme_alpha_bohr / ( inv_dr )
           # subtracting contributions from the indexed Vext_correction as an n_gridpoint x 1 array
           vext[indices] += np.sum( (charges[np.newaxis,:]*inv_dr.T*erfc(alpha_dr).T) , axis=1 ) 
+
+    #*******************************************
+    # this method performs the Psi4 Energy
+    # energy calculation call
+    #*******************************************
+    def calc_energy( self , vext=None , box=None ):
+          if eval(self.qmmm_ewald):
+              ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True , pme_grid_size=self.pme_grid_size , vexternal_grid=vext , box=box , interpolation_method="interpn" )
+          else:
+              ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True )
 
 #****************************************************
 # this is a standalone helper method, outside of class.
