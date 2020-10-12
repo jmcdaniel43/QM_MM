@@ -1,0 +1,61 @@
+### PME Input File Template
+### Written by John P. Pederson
+
+
+### file directories
+pdb_dir: ppd_bmim_box_oxi.pdb
+res_dir: sapt_residues_oxi.xml
+ff_dir: sapt_oxi.xml
+out_dir: PPD_Oxi_False_6A_final_out.out
+
+
+### Psi4 arguments
+functional: PBE
+basis_set: def2-SVP
+quadrature_spherical: 302
+quadrature_radial: 75
+
+
+### QM system arguments
+
+# atom indices start at zero, range starts at first value, ends before second value
+QMatoms_range: ( 79165 , 79181 )
+QMcharge: 1
+QMspin: 2
+
+
+### MM system arguments
+platform: CUDA
+set_periodic_residue: True
+collect_charge_data: True
+
+
+### qmmm method arguments
+qmmm_ewald: False
+qmmm_cutoff: 6 #angstrom
+qmmm_tare: True
+
+
+### pme method arguments
+pme_grid_size: 250
+pme_alpha: 5.0
+
+
+### simulation arguments
+temperature: 300 #kelvin
+temperature_drude: 1 #kelvin
+friction: 1 #per picosecond
+friction_drude: 1 #per picosecond
+timestep: 0.001 #picoseconds
+cutoff: 1.4 #nanometer
+
+# threshold for charge magnitude
+small_threshold: 1e-6
+
+# checking whether or not to advance frames using OpenMM
+return_system_init_pdb: False
+return_system_final_pdb: True
+
+# write results after this number of steps
+write_frequency: 1000
+simulation_length: 0.002 #nanoseconds
