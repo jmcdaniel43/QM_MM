@@ -42,17 +42,24 @@ MMsys = MM( **input_args )
 #**********************************************************************
 
 QMsys = QM( **input_args )
+QMsys_tare = None
+
+# checking if a QMsys_tare needs to be initialized
+if QMsys_tare is None and QMsys.qmmm_tare:
+
+    tare_input_args = copy( input_args )
+    tare_input_args['qmmm_ewald'] = 'False'
+    QMsys_tare = QM( **tare_input_args )
 
 #**********************************************************************
 #                     QM/MM Simulation
 #**********************************************************************
 
-#E = run_qmmm( QMsys , MMsys )
-run_simulation( QMsys , MMsys )
+( E , Q ) = run_qmmm( QMsys , MMsys , QMsys_tare )
 
 # generating output file
-#fh = open( input_args['out_dir'] , 'w')
-#fh.write( str(E) )
-#fh.close()
+fh = open( input_args['out_dir'] , 'w')
+fh.write( str(E) )
+fh.close()
 
 sys.exit()

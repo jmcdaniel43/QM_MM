@@ -81,6 +81,8 @@ class QM(object):
               self.QMcharge = int(kwargs['QMcharge'])
           if 'QMspin' in kwargs :
               self.QMspin = int(kwargs['QMspin'])
+          if 'pme_real_correction' in kwargs :
+              self.pme_real_correction = eval(kwargs['pme_real_correction'])
 
           # setting scf_type
           self.scf_type = 'df'
@@ -317,46 +319,12 @@ class QM(object):
           alpha_dr = pme_alpha_bohr / ( inv_dr )
           # subtracting contributions from the indexed Vext_correction as an n_gridpoint x 1 array
           vext[indices] -= np.sum( (charges[np.newaxis,:]*inv_dr.T*erf(alpha_dr).T) , axis=1 ) 
+
+          # adding correction for switching from gaussians to point charges at the boundary of the QM and MM regions
+          if self.pme_real_correction:
+                vext[indices] += np.sum( (charges[np.newaxis,:]*inv_dr.T*erfc(alpha_dr).T) , axis=1 )
+
           return vext
-
-    #*******************************************
-    # this method alters the vext grid in order to 
-    # account for exclusions.
-    # input is the pme_alpha value in nm^-1, nm to 
-    # bohr conversion factor, the real positions 
-    # of the atoms, and the original vext grid
-    #*******************************************
-    def set_real_correction( self , positions , vext , charges ):
-          # preparing an array of indices which will correspond to Vext_correction and casting to type int
-          indices = (self.PMEexclude_list[:,0]*self.pme_grid_size**2 + self.PMEexclude_list[:,1]*self.pme_grid_size + self.PMEexclude_list[:,2]).astype(np.int)
-          # collecting the positions and charges of atoms in the QMregion
-          #positions = []
-          #charges = []
-
-          #for i , atom in enumerate(self.QMatoms):
-          #      positions.append(real_pos[0][i])
-          #      charges.append(atom.charge)
-          #for i , atom in enumerate(self.QMother):
-          #      positions.append(real_pos[1][i])
-          #      charges.append(atom.charge)
-          #for i , atom in enumerate(self.QMdrude):
-          #      positions.append(real_pos[2][i])
-          #      charges.append(atom.charge)
-
-          # casting positions to n_atoms x 1 x 3 array, which will allow the pmegrid positions in realspace to be broadcast onto the QMregion positions later
-          positions = positions[:,np.newaxis,:] * nm_to_bohr
-          charges = np.array(charges)
-          # getting realspace pmegrid positions that are in QMregion
-          pme_grid = self.pmegrid_xyz[indices,:]
-          # getting least mirror postions between pmegrid positions and the QMregion atom positions, which will broadcast to produce an n_atom x n_gridpoints x 3 array
-          dr = get_least_mirror_pos( pme_grid , positions , self.box )
-          #dr = positions - pme_grid
-          # getting inverse distance, which will produce an n_atom x n_gridpoint array
-          inv_dr = 1 / np.linalg.norm( dr , axis=2 )
-          pme_alpha_bohr = self.pme_alpha / ( nm_to_bohr )
-          alpha_dr = pme_alpha_bohr / ( inv_dr )
-          # subtracting contributions from the indexed Vext_correction as an n_gridpoint x 1 array
-          vext[indices] += np.sum( (charges[np.newaxis,:]*inv_dr.T*erfc(alpha_dr).T) , axis=1 ) 
 
     #*******************************************
     # this method performs the Psi4 Energy

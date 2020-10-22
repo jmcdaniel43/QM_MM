@@ -114,6 +114,9 @@ def check_input_args( input_args ):
     if 'simulation_length' not in input_args.keys() or input_args['simulation_length'] is None:
         input_args['simulation_length'] = '0.1'
         print(' ''simulation_length'' not specified, using default of 0.1')
+    if 'pme_real_correction' not in input_args.keys() or input_args['pme_real_correction'] is None:
+        input_args['pme_real_correction'] = 'False'
+        print(' ''pme_real_correction'' not specified, using default of ''False'' ')
 
     # checking args that strictly require inputs
     if 'set_periodic_residue' not in input_args.keys() or input_args['set_periodic_residue'] is None:
@@ -238,13 +241,8 @@ def run_qmmm( QMsys , MMsys , QMsys_tare = None ):
     # checking if a QMsys_tare needs to be initialized
     if QMsys_tare is None and QMsys.qmmm_tare:
 
-        # copying input arguments and QMsystem
-        tare_input_args = copy( QMsys.inputs )
-        QMsys_tare = copy( QMsys )
-
-        # editing inputs for taring and reinitializing copy with edited inputs
-        tare_input_args['qmmm_ewald'] = 'False'
-        QMsys_tare.reset( **tare_input_args )
+        # alerting the user
+        print('You have not provided a tared QMsys object to compare with! The electronic energy of your system will be calculated, but the conformational energy will not be subtracted!')
 
     # subtracting conformational energy
     if QMsys_tare is not None:
@@ -279,126 +277,6 @@ def run_qmmm( QMsys , MMsys , QMsys_tare = None ):
     else:
 
         return E
-
-# this subroutine facilitates the OpenMM Simulation Loop
-#      QMsys              : Existing QM object
-#      MMsys              : Existing MM object
-#      QMsys_tare         : Existing QM object for taring
-def run_simulation( QMsys , MMsys , QMsys_tare = None ):
-
-    # checking if a QMsys_tare needs to be initialized
-    if QMsys_tare is None and QMsys.qmmm_tare:
-
-        tare_input_args = copy( QMsys.inputs )
-        QMsys_tare = copy( QMsys )
-        tare_input_args['qmmm_ewald'] = 'False'
-        QMsys_tare.reset( **tare_input_args )
-
-    # checking and creating start drudes pdb
-    if MMsys.return_system_init_pdb:
-        MMsys.write_pdb( 'start_drudes' )
-
-    # getting state to depict initial energies
-    state = MMsys.simmd.context.getState( getEnergy=True , getForces=True , getPositions=True ) 
-
-    # printing initial energies
-    print( str(state.getKineticEnergy()) )
-    print( str(state.getPotentialEnergy()) )
-
-    for j in range( MMsys.system.getNumForces() ):
-
-        f = MMsys.system.getForce( j )
-        print( type(f) , str(MMsys.simmd.context.getState( getEnergy=True , groups=2**j ).getPotentialEnergy()) )
-
-    # this needs to be considered
-    #MMsys.simmd.reporters = []
-    #MMsys.simmd.reporters.append(DCDReporter('md_output.dcd', write_frequency))
-
-    # opening output file
-    fh = open( MMsys.out_dir , 'w' )
-    fh.write( str(MMsys.qmmm_cutoff) + 'A' )
-
-    print( 'Starting Simulation...' )
-
-    # checking if an MMsys_CPU needs to be initialized
-    if MMsys.platformname is not 'CPU' and MMsys.qmmm_ewald:
-
-        CPU_input_args = copy( MMsys.inputs )
-        MMsys_CPU = copy( MMsys )
-        CPU_input_args['platform'] = 'CPU'
-        MMsys_CPU.reset( **CPU_input_args )
-
-    # otherwise, None object
-    else:
-
-        MMsys_CPU = None
-
-    # starting simulation loop
-    for i in range( MMsys.loop_range ):
-
-        MMsys.simmd.step( MMsys.write_frequency )
-
-        print(i,strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-        print(i,datetime.now())
-
-        if MMsys_CPU is not None:
-
-            state = MMsys.simmd.context.getState( getEnergy=True,getForces=True,getPositions=True )
-            pos_list = state.getPositions( )
-            MMsys_CPU.simmd.context.setPositions( pos_list )
-
-            # checking if charge data needs to be collected and writing to file
-            if MMsys.collect_charge_data:
-
-                ( E , embed_charge ) = run_qmmm( QMsys , MMsys_CPU , QMsys_tare )
-
-                fh.write( '\n' )
-                fh.write( str(E) + '\t' + str(embed_charge) )
-                fh.flush()
-
-            else:
-
-                E = run_qmmm( QMsys , MMsys_CPU , QMsys_tare )
-
-                fh.write( '\n' )
-                fh.write( str(E) )
-                fh.flush()
-
-        else:
-
-            # checking if charge data needs to be collected and writing to file
-            if MMsys.collect_charge_data:
-
-                ( E , embed_charge ) = run_qmmm( QMsys , MMsys , QMsys_tare )
-
-                fh.write( '\n' )
-                fh.write( str(E) + '\t' + str(embed_charge) )
-                fh.flush()
-
-            else:
-
-                E = run_qmmm( QMsys , MMsys , QMsys_tare )
-
-                fh.write( '\n' )
-                fh.write( str(E) )
-                fh.flush()
-
-        # printing energies for this iteration of the simulation
-        print( str(state.getKineticEnergy()) )
-        print( str(state.getPotentialEnergy()) )
-
-        for j in range( MMsys.system.getNumForces() ):
-
-            f = MMsys.system.getForce( j )
-            print( type(f) , str(MMsys.simmd.context.getState( getEnergy=True , groups=2**j ).getPotentialEnergy()) )
-
-    fh.close()
-
-    # checking and creating final coordinates pdb
-    if MMsys.return_system_final_pdb:
-        MMsys.write_pdb( 'final' )
-
-    print('Done!')
 
 # this is standalone helper method, outside of class
 # input is an OpenMM state object
