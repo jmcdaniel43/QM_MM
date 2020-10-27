@@ -39,6 +39,7 @@ qmmm_tare: True
 ### pme method arguments
 pme_grid_size: 250
 pme_alpha: 5.0
+pme_real_correction: False
 
 
 ### simulation arguments
