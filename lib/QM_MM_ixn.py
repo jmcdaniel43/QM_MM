@@ -9,11 +9,11 @@ nm_to_bohr = 18.89726
 hartree_to_kjmol = 2625.4996
 
 # this subroutine parses the input file and returns a dictionary of arguments that may be passed to the QM and MM classes
-#      file_dir           : Input file directory
-def parse_input_file( file_dir ):
+#      input_file           : Input file
+def parse_input_file( input_file ):
 
     # getting file contents
-    fh = open( file_dir )
+    fh = open( input_file )
     lines = fh.readlines()
     fh.close()
 
@@ -91,7 +91,7 @@ def check_input_args( input_args ):
         input_args['platform'] = 'CPU'
         print(' ''platform'' not specified, using default of ''CPU'' ')
     if 'collect_charge_data' not in input_args.keys() or input_args['collect_charge_data'] is None:
-        input_args['collect_charge_data'] = 'False'
+        input_args['collect_charge_data'] = False
         print(' ''collect_charge_data'' not specified, using default of ''False'' ')
     if 'qmmm_tare' not in input_args.keys() or input_args['qmmm_tare'] is None:
         input_args['qmmm_tare'] = 'False'
@@ -140,14 +140,14 @@ def check_input_args( input_args ):
     if 'quadrature_radial' not in input_args.keys() or input_args['quadrature_radial'] is None:
         print(' ''quadrature_radial'' not specified, please provide an int-type value for this key in the input file')
         sys.exit( )
-    if 'pdb_dir' not in input_args.keys() or input_args['pdb_dir'] is None:
-        print(' ''pdb_dir'' not specified, please provide a string-type value for this key in the input file')
+    if 'pdb_list' not in input_args.keys() or input_args['pdb_list'] is None:
+        print(' ''pdb_list'' not specified, please provide a string-type value for this key in the input file')
         sys.exit( )
-    if 'res_dir' not in input_args.keys() or input_args['res_dir'] is None:
-        print(' ''res_dir'' not specified, please provide a string-type value for this key in the input file')
+    if 'residue_xml_list' not in input_args.keys() or input_args['residue_xml_list'] is None:
+        print(' ''residue_xml_list'' not specified, please provide a string-type value for this key in the input file')
         sys.exit( )
-    if 'ff_dir' not in input_args.keys() or input_args['ff_dir'] is None:
-        print(' ''ff_dir'' not specified, please provide a string-type value for this key in the input file')
+    if 'ff_xml_list' not in input_args.keys() or input_args['ff_xml_list'] is None:
+        print(' ''ff_xml_list'' not specified, please provide a string-type value for this key in the input file')
         sys.exit( )
     if 'QMatoms_range' not in input_args.keys() or input_args['QMatoms_range'] is None:
         print(' ''QMatoms_range'' not specified, please provide a 2-element tuple-type value for this key in the input file')
@@ -155,31 +155,51 @@ def check_input_args( input_args ):
 
     return input_args
 
+
+
 # this subroutine runs the energy calculation, which requires information from both the QM and MM systems
 #      QMsys              : Existing QM object
 #      MMsys              : Existing MM object
 #      tare               : boolean, if true, the conformational energy will be subtracted from the calculation
-def run_qmmm( QMsys , MMsys , QMsys_tare = None ):
+def qmmm_energy( QMsys , MMsys , QMregion_list = None , QMsys_tare = None , collect_charge_data = False ):
 
-    # getting QMregion_list using input values
-    MMsys.get_QMregion_list()
+
+    #****************************************
+    #  We keep track of 3 lists of atoms, these are:
+    #
+    #    1) MMsys.QMatoms_list :  the atoms explicitly treated with electronic structure (Psi4)
+    #   
+    #    2) QMregion_list :  all atoms/drudes in the MMenvironment that we put in analytic charge embedding
+    #
+    #    3) QMdrudes_list :  any drude oscillators on the molecule(s) encompassing QMatoms_list.  We need a separate
+    #                        list for this, as these coulomb interactions need to be removed from numerical embedding (PME),
+    #                        but should not be included in analytic charge embedding.
+    #
+    #*****************************************
+
+    # generate a QMregion list based on cutoff if it is not explicitly input ...
+    if QMregion_list is None:
+        QMregion_list , QMdrudes_list = MMsys.get_QMregion_list()
+    else:
+        # if QMregion_list is input, assume QMdrudes_list is empty ...
+        QMdrudes_list = ()
+        print( "assuming there are no drude oscillators on QM molecules, i.e. QMdrudes_list is empty...")
 
     # QMother is the difference between lists ..
-    QMother_list = np.setdiff1d( np.array( MMsys.QMregion_list ) , np.array( MMsys.QMatoms_list ) )
-    QMdrude_list = MMsys.QMdrudes_list
+    QMother_list = np.setdiff1d( np.array( QMregion_list ) , np.array( MMsys.QMatoms_list ) )
 
     # get elements/charges of QM region atoms from MMsys ...
-    element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ MMsys.QMatoms_list , QMother_list , QMdrude_list ] )
+    element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ MMsys.QMatoms_list , QMother_list , QMdrudes_list ] )
 
     embed_charge = sum( charge_lists[1] )
 
     print('QMregion collected')
 
     # Fill QM region with atoms.
-    QMsys.set_QM_region( element_lists , charge_lists , MMsys.QMatoms_list, QMother_list , QMdrude_list )
+    QMsys.set_QM_region( element_lists , charge_lists , MMsys.QMatoms_list, QMother_list , QMdrudes_list )
 
     # Get QM positions from MMsystem and set them in QMsys object
-    positions_lists , real_pos = MMsys.get_positions_for_atom_lists([ MMsys.QMatoms_list , QMother_list , QMdrude_list] )
+    positions_lists , real_pos = MMsys.get_positions_for_atom_lists([ MMsys.QMatoms_list , QMother_list , QMdrudes_list] )
     QMsys.set_QM_positions( positions_lists )
 
     print('QM region set')
@@ -270,7 +290,7 @@ def run_qmmm( QMsys , MMsys , QMsys_tare = None ):
         E -= E_base
 
     # checking if embedded charge data should be returned
-    if MMsys.collect_charge_data:
+    if collect_charge_data:
 
         return E, embed_charge
 

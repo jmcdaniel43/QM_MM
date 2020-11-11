@@ -16,13 +16,12 @@ import sys
 import time
 import subprocess
 
-# important constants
+# conversions
 nm_to_bohr = 18.89726
 hartree_to_kjmol = 2625.4996
-# This Module defines new classes that we use to run a QM/MM simulation
 
 #*************************** README  **************************************
-#  This module defines QM classe that is used in a QM/MM simulation
+#  This module defines QM classes that is used in a QM/MM simulation
 #  Interfacing Psi4  and OpenMM
 #
 #  Because these codes use different units and datastructures, conversions
