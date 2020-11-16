@@ -3,7 +3,7 @@ from simtk.openmm import *
 from simtk.unit import *
 from sys import *
 #******** contains parent class
-from MM_class_base import *
+from shared.MM_class_base import *
 
 #*************************************************
 # This is a child MM system class for QM/MM simulations

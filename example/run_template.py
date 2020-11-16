@@ -7,8 +7,7 @@ sys.path.append('../lib/')
 #********* import QMclass
 from QM_classes import *
 
-#********* import parent/child MMclass
-from MM_class_base import *
+#********* import MMclass
 from MM_classes import *
 
 #********* import additional subroutines
