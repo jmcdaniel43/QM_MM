@@ -17,9 +17,9 @@ class MM_QMMM(MM_base):
         #storing inputs for later
         self.inputs = kwargs
         self.qmmm_ewald = False
-        
+
         # constructor for Parent...
-        super().__init__( pdb_list , residue_xml_list , ff_xml_list , **kwargs )
+        super().__init__( [pdb_list] , [residue_xml_list] , [ff_xml_list] , **kwargs )
 
 
         # inputs from **kwargs
@@ -79,7 +79,8 @@ class MM_QMMM(MM_base):
             self.properties = {'Precision': 'mixed'}
             if self.qmmm_ewald :
                 print( 'Can only run QM/MM simulation with reference/CPU platforms !')
-                sys.exit()
+                self.simmd = Simulation(self.modeller.topology, self.system, self.integrator, self.platform, self.properties)
+                #sys.exit()
             else :
                 self.simmd = Simulation(self.modeller.topology, self.system, self.integrator, self.platform, self.properties)
         else:
@@ -195,6 +196,7 @@ class MM_QMMM(MM_base):
                          for j in range(len(QM_atoms)):
                              if hasattr(QM_elements[j],'symbol'):
                                  QMregion_list.append(QM_atoms[j])
+                                 #print(str(QM_elements[j].symbol),flush=True)
                              else:
                                  QMdrudes_list.append(QM_atoms[j])
                      else:
@@ -211,7 +213,7 @@ class MM_QMMM(MM_base):
           state = self.simmd.context.getState(getEnergy=True,getForces=True,getPositions=True,enforcePeriodicBox=True)
           pos_list = state.getPositions()
           self.simmd.topology.setPeriodicBoxVectors(state.getPeriodicBoxVectors())
-          PDBFile.writeFile( self.simmd.topology , pos_list , open( self.out_dir.split( '.' )[0] + '_' + name + '.pdb', 'w' ) )
+          PDBFile.writeFile( self.simmd.topology , pos_list , open( name + '.pdb', 'w' ) )
 
 #****************************************************
 # this is a standalone helper method, outside of class

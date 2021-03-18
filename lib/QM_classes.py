@@ -73,7 +73,7 @@ class QM(object):
           if 'quadrature_radial' in kwargs :
               self.dft_radial_points = int(kwargs['quadrature_radial'])
           if 'qmmm_ewald' in kwargs :
-              self.qmmm_ewald = kwargs['qmmm_ewald']
+              self.qmmm_ewald = eval(kwargs['qmmm_ewald'])
           if 'qmmm_tare' in kwargs :
               self.qmmm_tare = eval(kwargs['qmmm_tare'])
           if 'QMcharge' in kwargs :
@@ -87,7 +87,7 @@ class QM(object):
           self.scf_type = 'df'
 
           # set basis , quadrature settings, scf_type, qmmm ...
-          psi4.set_options( {'basis' : self.basis , 'dft_spherical_points' : self.dft_spherical_points , 'dft_radial_points' : self.dft_radial_points , 'scf_type' : self.scf_type , 'qmmm' : self.qmmm_ewald.lower()  } )
+          psi4.set_options( {'basis' : self.basis , 'dft_spherical_points' : self.dft_spherical_points , 'dft_radial_points' : self.dft_radial_points , 'scf_type' : self.scf_type , 'qmmm' : str(self.qmmm_ewald).lower() } )
 
           # setting pme options
           if self.qmmm_ewald:
@@ -330,9 +330,13 @@ class QM(object):
     # energy calculation call
     #*******************************************
     def calc_energy( self , vext=None , box=None ):
-          if eval(self.qmmm_ewald):
+
+          if self.qmmm_ewald:
+              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
               ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True , pme_grid_size=self.pme_grid_size , vexternal_grid=vext , box=box , interpolation_method="interpn" )
+
           else:
+              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
               ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True )
 
 #****************************************************

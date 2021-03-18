@@ -222,11 +222,11 @@ def qmmm_energy( QMsys , MMsys , QMregion_list = None , QMsys_tare = None , coll
     #         this works with arbitrary triclinic boxes, and imposes PBC on DFT quadrature grid
 
     # performing vext corrections for PME-QM/MM
-    if MMsys.qmmm_ewald:
+
+    if QMsys.qmmm_ewald:
 
         # collecting state information
-        state = MMsys.simmd.context.getState( getEnergy=True,getForces=True,getVelocities=True,getPositions=True,getVext_grids=True, getPME_grid_positions=True )
-        print( 'done calculating energy, force, and vext' )
+        state = MMsys.simmd.context.getState( getEnergy=True , getForces=True , getVelocities=True , getPositions=True , getVext_grids=True , getPME_grid_positions=True )
 
         # external potential on PME grid
         vext = state.getVext_grid()
@@ -246,7 +246,7 @@ def qmmm_energy( QMsys , MMsys , QMregion_list = None , QMsys_tare = None , coll
         print('Vext set')
 
         # calculating electronic energy of the QM system
-        QMsys.calc_energy( vext , box )
+        QMsys.calc_energy( vext=vext , box=box )
 
     else:
 
