@@ -117,6 +117,8 @@ def check_input_args( input_args ):
     if 'pme_real_correction' not in input_args.keys() or input_args['pme_real_correction'] is None:
         input_args['pme_real_correction'] = 'False'
         print(' ''pme_real_correction'' not specified, using default of ''False'' ')
+    if 'pme_real_correction' in input_args.keys() and eval( input_args['pme_real_correction'] ):
+        print('WARNING: ''pme_real_correction'' is set to ''True''. This option may cause memory overflow depending on the size of your molecular dynamics system.')
 
     # checking args that strictly require inputs
     if 'set_periodic_residue' not in input_args.keys() or input_args['set_periodic_residue'] is None:
@@ -179,28 +181,53 @@ def qmmm_energy( QMsys , MMsys , QMregion_list = None , QMsys_tare = None , coll
 
     # generate a QMregion list based on cutoff if it is not explicitly input ...
     if QMregion_list is None:
-        QMregion_list , QMdrudes_list = MMsys.get_QMregion_list()
+        QMregion_list , QMdrudes_list , Num_atm = MMsys.get_QMregion_list()
+
     else:
+
         # if QMregion_list is input, assume QMdrudes_list is empty ...
         QMdrudes_list = ()
+        Num_atm = MMsys.simmd.topology.getNumAtoms()
         print( "assuming there are no drude oscillators on QM molecules, i.e. QMdrudes_list is empty...")
 
     # QMother is the difference between lists ..
     QMother_list = np.setdiff1d( np.array( QMregion_list ) , np.array( MMsys.QMatoms_list ) )
 
-    # get elements/charges of QM region atoms from MMsys ...
-    element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ MMsys.QMatoms_list , QMother_list , QMdrudes_list ] )
+    if QMsys.pme_real_correction:
 
-    embed_charge = sum( charge_lists[1] )
+        # getting remaining atom indices in box
+        MMother_list = np.setdiff1d( np.array( list( range( Num_atm ) ) ) , np.array( QMregion_list ) )
+        MMother_list = np.setdiff1d( MMother_list , np.array( QMdrudes_list ) )
 
-    print('QMregion collected')
+        # get elements/charges of QM region atoms from MMsys ...
+        element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ MMsys.QMatoms_list , QMother_list , QMdrudes_list , MMother_list ] )
 
-    # Fill QM region with atoms.
-    QMsys.set_QM_region( element_lists , charge_lists , MMsys.QMatoms_list, QMother_list , QMdrudes_list )
+        embed_charge = sum( charge_lists[1] )
 
-    # Get QM positions from MMsystem and set them in QMsys object
-    positions_lists , real_pos = MMsys.get_positions_for_atom_lists([ MMsys.QMatoms_list , QMother_list , QMdrudes_list] )
-    QMsys.set_QM_positions( positions_lists )
+        print('QMregion collected')
+
+        # Fill QM region with atoms.
+        QMsys.set_QM_region( element_lists , charge_lists , MMsys.QMatoms_list , QMother_list , QMdrudes_list , MMother_list )
+
+        # Get QM positions from MMsystem and set them in QMsys object
+        positions_lists , real_pos = MMsys.get_positions_for_atom_lists( [ MMsys.QMatoms_list , QMother_list , QMdrudes_list , MMother_list ] )
+        QMsys.set_QM_positions( positions_lists )
+
+    else:
+
+        # get elements/charges of QM region atoms from MMsys ...
+        element_lists , charge_lists = MMsys.get_element_charge_for_atom_lists( [ MMsys.QMatoms_list , QMother_list , QMdrudes_list ] )
+
+        embed_charge = sum( charge_lists[1] )
+
+        print('QMregion collected')
+
+        # Fill QM region with atoms.
+        QMsys.set_QM_region( element_lists , charge_lists , MMsys.QMatoms_list , QMother_list , QMdrudes_list )
+
+        # Get QM positions from MMsystem and set them in QMsys object
+        positions_lists , real_pos = MMsys.get_positions_for_atom_lists([ MMsys.QMatoms_list , QMother_list , QMdrudes_list] )
+        QMsys.set_QM_positions( positions_lists )
 
     print('QM region set')
 
@@ -208,7 +235,7 @@ def qmmm_energy( QMsys , MMsys , QMregion_list = None , QMsys_tare = None , coll
     QMsys.set_geometry( )
 
     print('Geometry set')
-
+ 
     # QM calculation
     #*********************************************************
     #       2 ways to intepolate vext from PME grid to DFT quadrature.  These are controlled by input **kwarg to psi4.energy
