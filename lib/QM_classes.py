@@ -73,7 +73,7 @@ class QM(object):
           if 'quadrature_radial' in kwargs :
               self.dft_radial_points = int(kwargs['quadrature_radial'])
           if 'qmmm_ewald' in kwargs :
-              self.qmmm_ewald = kwargs['qmmm_ewald']
+              self.qmmm_ewald = eval(kwargs['qmmm_ewald'])
           if 'qmmm_tare' in kwargs :
               self.qmmm_tare = eval(kwargs['qmmm_tare'])
           if 'QMcharge' in kwargs :
@@ -87,7 +87,7 @@ class QM(object):
           self.scf_type = 'df'
 
           # set basis , quadrature settings, scf_type, qmmm ...
-          psi4.set_options( {'basis' : self.basis , 'dft_spherical_points' : self.dft_spherical_points , 'dft_radial_points' : self.dft_radial_points , 'scf_type' : self.scf_type , 'qmmm' : self.qmmm_ewald.lower()  } )
+          psi4.set_options( {'basis' : self.basis , 'dft_spherical_points' : self.dft_spherical_points , 'dft_radial_points' : self.dft_radial_points , 'scf_type' : self.scf_type , 'qmmm' : str(self.qmmm_ewald).lower() } )
 
           # setting pme options
           if self.qmmm_ewald:
@@ -95,18 +95,11 @@ class QM(object):
               self.pme_alpha = float(kwargs['pme_alpha'])
 
     #**********************************
-    # Reinitializes the QM system object
-    # kwargs is a dictionary of arguments
-    #**********************************
-    def reset( self , **kwargs ):
-          self.__init__( **kwargs )
-
-    #**********************************
     # QMatoms_list is tuple specifying atom indices of QM atom
     # QMother_list specifies additional MM embedding atoms
     # element_lists / charge_lists correspond to [ QMatoms_list , QMother_list ] ...
     #**********************************
-    def set_QM_region(self, element_lists , charge_lists , QMatoms_list , QMother_list , QMdrude_list ):
+    def set_QM_region(self, element_lists , charge_lists , QMatoms_list , QMother_list , QMdrude_list , MMother_list=None ):
           # create lists of atom_QM objects: there are two lists here:
           # QMatoms stores data for QMatoms
           # QMother stores data for MM embedding atoms
@@ -120,17 +113,26 @@ class QM(object):
               atom_i = atom_QM( element_lists[0][i_atom] , charge_lists[0][i_atom] , QMatoms_list[i_atom] )
               self.QMatoms.append( atom_i )  #QMatom
 
-         # now create self.QMother ..
+          # now create self.QMother ..
           for i_atom in range(len(QMother_list)):
               # create atom_QM object
               atom_i = atom_QM( element_lists[1][i_atom] , charge_lists[1][i_atom] , QMother_list[i_atom] )
               self.QMother.append( atom_i )  #MM embedding atom
 
-         # finally create self.QMdrude ..
+          # finally create self.QMdrude ..
           for i_atom in range(len(QMdrude_list)):
               # create atom_QM object
               atom_i = atom_QM( element_lists[2][i_atom] , charge_lists[2][i_atom] , QMdrude_list[i_atom] )
               self.QMdrude.append( atom_i )  #MM embedding atom
+
+          # checking for MMother for PME real correction
+          if MMother_list is not None:
+              self.MMother = []
+
+              for i_atom in range(len(MMother_list)):
+                  # create atom_QM object
+                  atom_i = atom_QM( element_lists[3][i_atom] , charge_lists[3][i_atom] , MMother_list[i_atom] )
+                  self.MMother.append( atom_i )  #MM embedding atom
 
 
     #***************************************
@@ -159,6 +161,12 @@ class QM(object):
           for i_atom in range(len(self.QMdrude)):
               atom = self.QMdrude[i_atom]
               atom.set_xyz( positions_lists[2][i_atom][0] * lengthconv, positions_lists[2][i_atom][1] * lengthconv, positions_lists[2][i_atom][2] * lengthconv )
+
+          # checking for MMother for PME real correction
+          if self.pme_real_correction:
+              for i_atom in range(len(self.MMother)):
+                  atom = self.MMother[i_atom]
+                  atom.set_xyz( positions_lists[3][i_atom][0] * lengthconv, positions_lists[3][i_atom][1] * lengthconv, positions_lists[3][i_atom][2] * lengthconv )
 
 
     #*************************************
@@ -307,21 +315,44 @@ class QM(object):
           # casting positions to n_atoms x 1 x 3 array, which will allow the pmegrid positions in realspace to be broadcast onto the QMregion positions later
           positions = np.array(positions)[:,np.newaxis,:] * nm_to_bohr
           charges = np.array(charges)
+
           # getting realspace pmegrid positions that are in QMregion
           pme_grid = self.pmegrid_xyz[indices,:]
+
           # getting least mirror postions between pmegrid positions and the QMregion atom positions, which will broadcast to produce an n_atom x n_gridpoints x 3 array
           dr = get_least_mirror_pos( pme_grid , positions , self.box )
           #dr = positions - pme_grid
+
           # getting inverse distance, which will produce an n_atom x n_gridpoint array
           inv_dr = 1 / np.linalg.norm( dr , axis=2 )
           pme_alpha_bohr = self.pme_alpha / ( nm_to_bohr )
           alpha_dr = pme_alpha_bohr / ( inv_dr )
+
           # subtracting contributions from the indexed Vext_correction as an n_gridpoint x 1 array
           vext[indices] -= np.sum( (charges[np.newaxis,:]*inv_dr.T*erf(alpha_dr).T) , axis=1 ) 
 
           # adding correction for switching from gaussians to point charges at the boundary of the QM and MM regions
           if self.pme_real_correction:
-                vext[indices] += np.sum( (charges[np.newaxis,:]*inv_dr.T*erfc(alpha_dr).T) , axis=1 )
+
+              # collecting the positions and charges of atoms in the MMregion
+              positions = []
+              charges = []
+
+              for i , atom in enumerate(self.MMother):
+                  positions.append(real_pos[3][i])
+                  charges.append(atom.charge)
+
+              # casting positions to n_atoms x 1 x 3 array, which will allow the pmegrid positions in realspace to be broadcast onto the QMregion positions later
+              positions = np.array(positions)[:,np.newaxis,:] * nm_to_bohr
+              charges = np.array(charges)
+
+              # getting least mirror postions between pmegrid positions and the QMregion atom positions, which will broadcast to produce an n_atom x n_gridpoints x 3 array
+              dr = get_least_mirror_pos( pme_grid , positions , self.box )
+
+              # getting inverse distance, which will produce an n_atom x n_gridpoint array
+              inv_dr = 1 / np.linalg.norm( dr , axis=2 )
+              alpha_dr = pme_alpha_bohr / ( inv_dr )
+              vext[indices] += np.sum( (charges[np.newaxis,:]*inv_dr.T*erfc(alpha_dr).T) , axis=1 )
 
           return vext
 
@@ -330,9 +361,13 @@ class QM(object):
     # energy calculation call
     #*******************************************
     def calc_energy( self , vext=None , box=None ):
-          if eval(self.qmmm_ewald):
+
+          if self.qmmm_ewald:
+              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
               ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True , pme_grid_size=self.pme_grid_size , vexternal_grid=vext , box=box , interpolation_method="interpn" )
+
           else:
+              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
               ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True )
 
 #****************************************************

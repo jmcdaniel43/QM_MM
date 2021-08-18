@@ -17,9 +17,9 @@ class MM_QMMM(MM_base):
         #storing inputs for later
         self.inputs = kwargs
         self.qmmm_ewald = False
-        
+
         # constructor for Parent...
-        super().__init__( pdb_list , residue_xml_list , ff_xml_list , **kwargs )
+        super().__init__( [pdb_list] , [residue_xml_list] , [ff_xml_list] , **kwargs )
 
 
         # inputs from **kwargs
@@ -79,27 +79,14 @@ class MM_QMMM(MM_base):
             self.properties = {'Precision': 'mixed'}
             if self.qmmm_ewald :
                 print( 'Can only run QM/MM simulation with reference/CPU platforms !')
-                sys.exit()
+                self.simmd = Simulation(self.modeller.topology, self.system, self.integrator, self.platform, self.properties)
+                #sys.exit()
             else :
                 self.simmd = Simulation(self.modeller.topology, self.system, self.integrator, self.platform, self.properties)
         else:
             print(' Could not recognize platform selection ... ')
             sys.exit(0)
         self.simmd.context.setPositions(self.modeller.positions)
-
-
-
-    #**********************************
-    # Reinitializes the QM system object
-    # kwargs is a dictionary of arguments
-    #**********************************
-    def reset( self , **kwargs ):
-          self.__init__( **kwargs )
-
-    def set_QMregion_parameters( self , QMatoms_list , qmmm_cutoff ):
-          self.qmmm_cutoff = qmmm_cutoff
-          self.QMatoms_list = QMatoms_list
-
 
 
     #**************************
@@ -134,10 +121,41 @@ class MM_QMMM(MM_base):
 
         return element_lists , charge_lists
 
-  
+
     #**************************
-    # input atom_lists is list of lists of atoms
-    # returns a list of lists of positions with one-to-one correspondence...
+    # input atom_list is list of atoms
+    # returns a list of elements, charges with one-to-one correspondence...
+    #**************************
+#    def get_element_charge_for_atom_list( self, atom_list ):
+
+#        #instantiating the element and charge lists
+#        element_list=[]
+#        charge_list=[]
+
+#        # loop over atoms in topology and match atoms from list...
+#        for atom in self.simmd.topology.atoms():
+
+#            # if in atom_list ..
+#            if atom.index in atom_list:
+#                element = atom.element
+
+#                # get atomic charge from force field...
+#                (q_i, sig, eps) = self.nbondedForce.getParticleParameters(atom.index)
+
+#                # add to lists
+#                if len(dir(element)) == 40:
+#                     element_list.append( element.symbol )
+
+#                else:
+#                     element_list.append( atom.name )
+#                charge_list.append( q_i._value )
+
+#        return element_list , charge_list
+
+
+    #**************************
+    # input atom_lists is a list of lists of atoms
+    # returns a list of positions with one-to-one correspondence...
     #**************************
     def get_positions_for_atom_lists( self , atom_lists ):
 
@@ -162,6 +180,34 @@ class MM_QMMM(MM_base):
 
         return lm_position_lists , real_position_lists
 
+  
+    #**************************
+    # input atom_lists is list of atoms
+    # returns a list of positions with one-to-one correspondence...
+    #**************************
+#    def get_positions_for_atom_list( self , atom_list ):
+
+#        # getting state and positions
+#        state = self.simmd.context.getState(getEnergy=False,getForces=False,getVelocities=False,getPositions=True)
+#        positions = state.getPositions()
+
+#        # getting position of first atom of QMatoms residue and box vectors
+#        QM_pos = positions[self.QMatoms_list[0]]._value
+#        box_vectors = [state.getPeriodicBoxVectors()[i]._value for i in range(3)]
+
+#        # instantiating least mirror and "real" position lists
+#        lm_position_list=[]
+#        real_position_list=[]
+
+#        #looping through each atom in the atom list and storing the relevant position information
+#        for index in atom_list:
+#            ind_pos = positions[index]._value
+#            real_position_list.append( ind_pos )
+
+#            r = get_least_mirror_pos( ind_pos , QM_pos , box_vectors)
+#            lm_position_list.append( [r[i]+QM_pos[i] for i in range(3)] )
+
+#        return lm_position_list , real_position_list
 
 
     #**************************
@@ -174,8 +220,10 @@ class MM_QMMM(MM_base):
           # getting the atom index for the first atom listed for each residue
           res_atom_ind = []
           res_list = [res for res in self.simmd.topology.residues()]
+
           for res in res_list:
                res_atom_ind.append(res._atoms[0].index)
+
           # getting current box size for minimum mirror image calculation
           state = self.simmd.context.getState( getEnergy=False , getForces=False , getVelocities=True , getPositions=True , getParameters=True )
           pos = state.getPositions()
@@ -184,23 +232,33 @@ class MM_QMMM(MM_base):
           # populating QMregion_list and QMdrudes_list
           QMregion_list = []
           QMdrudes_list = []
+
           for i in range(len(pos)):
                r = get_least_mirror_pos(QM_pos,pos[i]._value,box_vectors)
                dist = sum([r[i]**2 for i in range(3)])**(0.5)
+
                if dist < cutoff and i in res_atom_ind:
                      ind = res_atom_ind.index(i)
+
                      if i in self.QMatoms_list:
                          QM_atoms = [atom.index for atom in res_list[ind]._atoms]
                          QM_elements = [atom.element for atom in res_list[ind]._atoms]
+
                          for j in range(len(QM_atoms)):
+
                              if hasattr(QM_elements[j],'symbol'):
                                  QMregion_list.append(QM_atoms[j])
+                                 #print(str(QM_elements[j].symbol),flush=True)
+
                              else:
                                  QMdrudes_list.append(QM_atoms[j])
+
                      else:
                           QMregion_list.extend([atom.index for atom in res_list[ind]._atoms])
 
-          return tuple( QMregion_list ) , tuple( QMdrudes_list )
+          Num_atm = self.simmd.topology.getNumAtoms()
+
+          return tuple( QMregion_list ) , tuple( QMdrudes_list ) , Num_atm
 
 
     #********************
@@ -211,7 +269,7 @@ class MM_QMMM(MM_base):
           state = self.simmd.context.getState(getEnergy=True,getForces=True,getPositions=True,enforcePeriodicBox=True)
           pos_list = state.getPositions()
           self.simmd.topology.setPeriodicBoxVectors(state.getPeriodicBoxVectors())
-          PDBFile.writeFile( self.simmd.topology , pos_list , open( self.out_dir.split( '.' )[0] + '_' + name + '.pdb', 'w' ) )
+          PDBFile.writeFile( self.simmd.topology , pos_list , open( name + '.pdb', 'w' ) )
 
 #****************************************************
 # this is a standalone helper method, outside of class
