@@ -32,12 +32,7 @@ input_args = parse_input_file( args.input_file )
 #                     Create MM system object
 #**********************************************************************
 
-# input files for setting up OpenMM
-pdb_list = [ input_args.pop( 'pdb_list' , False ) , ]
-residue_xml_list = [ input_args.pop( 'residue_xml_list' , False ) , ]
-ff_xml_list = [ input_args.pop( 'ff_xml_list' , False ) , ]
-
-MMsys = MM_QMMM( pdb_list , residue_xml_list , ff_xml_list , **input_args )
+MMsys = MM_QMMM( **input_args )
 # set Platform
 MMsys.set_platform( input_args['platform'] )
 # set exclusions for SAPT-FF force field
