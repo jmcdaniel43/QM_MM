@@ -369,19 +369,13 @@ class QM(object):
     #*******************************************
     def calc_energy( self , vext=None , box=None ):
 
-          try:
+          if self.qmmm_ewald:
+              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
+              ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True , pme_grid_size=self.pme_grid_size , vexternal_grid=vext , box=box , interpolation_method="interpn" )
 
-              if self.qmmm_ewald:
-                  core.set_local_option("SCF","QMMM", self.qmmm_ewald)
-                  ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True , pme_grid_size=self.pme_grid_size , vexternal_grid=vext , box=box , interpolation_method="interpn" )
-
-              else:
-                  core.set_local_option("SCF","QMMM", self.qmmm_ewald)
-                  ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True )
-
-          except:
-
-              self.energy = np.nan
+          else:
+              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
+              ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True )
 
 #****************************************************
 # this is a standalone helper method, outside of class.
