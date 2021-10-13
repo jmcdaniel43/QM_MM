@@ -328,8 +328,15 @@ class QM(object):
           pme_alpha_bohr = self.pme_alpha / ( nm_to_bohr )
           alpha_dr = pme_alpha_bohr / ( inv_dr )
 
+          tmp = charges[np.newaxis,:]*inv_dr.T*erf(alpha_dr).T
+          mask = np.where( erf(alpha_dr) <= 1*10**(-6) )
+
+          tmp[mask[1],mask[0]] = pme_alpha_bohr*charges[mask[0]]*2*np.pi**(-0.5)
+
           # subtracting contributions from the indexed Vext_correction as an n_gridpoint x 1 array
-          vext[indices] -= np.sum( (charges[np.newaxis,:]*inv_dr.T*erf(alpha_dr).T) , axis=1 ) 
+          vext[indices] -= np.sum( tmp , axis=1 ) 
+
+          #vext[indices] -= np.sum( (charges[np.newaxis,:]*inv_dr.T*erf(alpha_dr).T) , axis=1 ) 
 
           # adding correction for switching from gaussians to point charges at the boundary of the QM and MM regions
           if self.pme_real_correction:
@@ -362,13 +369,19 @@ class QM(object):
     #*******************************************
     def calc_energy( self , vext=None , box=None ):
 
-          if self.qmmm_ewald:
-              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
-              ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True , pme_grid_size=self.pme_grid_size , vexternal_grid=vext , box=box , interpolation_method="interpn" )
+          try:
 
-          else:
-              core.set_local_option("SCF","QMMM", self.qmmm_ewald)
-              ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True )
+              if self.qmmm_ewald:
+                  core.set_local_option("SCF","QMMM", self.qmmm_ewald)
+                  ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True , pme_grid_size=self.pme_grid_size , vexternal_grid=vext , box=box , interpolation_method="interpn" )
+
+              else:
+                  core.set_local_option("SCF","QMMM", self.qmmm_ewald)
+                  ( self.energy , self.wfn ) = psi4.energy( self.DFT_functional , return_wfn=True )
+
+          except:
+
+              self.energy = np.nan
 
 #****************************************************
 # this is a standalone helper method, outside of class.
