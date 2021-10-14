@@ -283,3 +283,4 @@ def get_least_mirror_pos( i_vec, j_vec, box_vec ):
     r -= box_vec[0]*math.floor(r[0]/box_vec[0][0]+0.5)
 
     return r
+
