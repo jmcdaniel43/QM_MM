@@ -329,14 +329,13 @@ class QM(object):
           alpha_dr = pme_alpha_bohr / ( inv_dr )
 
           tmp = charges[np.newaxis,:]*inv_dr.T*erf(alpha_dr).T
-          mask = np.where( erf(alpha_dr) <= 1*10**(-6) )
 
+          # getting indices for atoms that are on top of grid points and substituting using the proper convergent value
+          mask = np.where( erf(alpha_dr) <= 1*10**(-6) )
           tmp[mask[1],mask[0]] = pme_alpha_bohr*charges[mask[0]]*2*np.pi**(-0.5)
 
           # subtracting contributions from the indexed Vext_correction as an n_gridpoint x 1 array
           vext[indices] -= np.sum( tmp , axis=1 ) 
-
-          #vext[indices] -= np.sum( (charges[np.newaxis,:]*inv_dr.T*erf(alpha_dr).T) , axis=1 ) 
 
           # adding correction for switching from gaussians to point charges at the boundary of the QM and MM regions
           if self.pme_real_correction:
