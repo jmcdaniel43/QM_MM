@@ -1,3 +1,6 @@
 [submodule "lib/shared"]
 	path = lib/shared
 	url = https://github.com/jmcdaniel43/MM_base
+[submodule "qm_mm/shared"]
+	path = qm_mm/shared
+	url = https://github.com/johnppederson/mm_base
