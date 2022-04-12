@@ -2,11 +2,11 @@
 QM/MM/PME
 =========
 
-:author: John Pederson
-:author_email: jpederson6@gatech.edu
-:project: QM_MM
-:date_written: March 28, 2022
-:last_date_modified: April 11, 2022
+:Author: John Pederson
+:Author Email: jpederson6@gatech.edu
+:Project: QM_MM
+:Date Written: March 28, 2022
+:Last Date Modified: April 11, 2022
 
 Summary
 -------
