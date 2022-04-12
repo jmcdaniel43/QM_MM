@@ -1,6 +1,0 @@
-NOTE:
-   The initial SCF iteration won't exactly agree between the test and reference calculations because the
-   initial guess is based on the one-electron (core) Hamiltonian, and doesn't contain the DFT potential/quadrature contribution,
-   which is where the MMfield is implemented in the test case.
-
-   We compare the energetics after the SCF has converged, which should be the same
