@@ -58,8 +58,15 @@ topology XML, and forcefield XML for the OpenMM interface.  All other
 options may be passed as options in the instantiation of the
 MMSubsystem, QMSubsystem, and QMMMSystem objects.
 
+Documentation
+-------------
+
+The documentation for this project can be found `here!
+<http://johnppederson.com/QM_MM/index.html>`_
+
 Authors
 -------
 
 Jesse McDaniel
+
 John Pederson
