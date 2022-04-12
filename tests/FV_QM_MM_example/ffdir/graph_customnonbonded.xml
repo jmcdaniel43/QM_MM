@@ -1,0 +1,15 @@
+<ForceField>
+ <CustomNonbondedForce>
+  <Atom class="Cgtc" Aexch="0" Aelec="0" Aind="0" Adhf="0" Bexp="100" C6="0" C8="0" C10="0" C12="0"/>
+  <Atom class="Cgtd" Aexch="0" Aelec="0" Aind="0" Adhf="0" Bexp="100" C6="0" C8="0" C10="0" C12="0"/>
+  <Atom class="Cgtr" Aexch="423935.1" Aelec="204171.8" Aind="18740.5" Adhf="44967.6" Bexp="34.384" C6="0.0016774" C8="6.6332e-05" C10="6.42479e-06" C12="2.679893e-07"/>
+  <Atom class="Cgt" Aexch="423935.1" Aelec="204171.8" Aind="18740.5" Adhf="44967.6" Bexp="34.384" C6="0.0016774" C8="6.6332e-05" C10="6.42479e-06" C12="2.679893e-07"/>
+  <Atom class="Hgt" Aexch="0" Aelec="0" Aind="0" Adhf="0" Bexp="100" C6="0" C8="0" C10="0" C12="0"/>
+  <Atom class="Cgts" Aexch="423935.1" Aelec="204171.8" Aind="18740.5" Adhf="44967.6" Bexp="34.384" C6="0.0016774" C8="6.6332e-05" C10="6.42479e-06" C12="2.679893e-07"/>
+  <Atom class="Hgts" Aexch="0" Aelec="0" Aind="0" Adhf="0" Bexp="100" C6="0" C8="0" C10="0" C12="0"/>
+  <Atom class="OH" Aexch="199073.0" Aelec="107480.0" Aind="26255.0" Adhf="11095.0" Bexp="37.794" C6="0.00084127" C8="5.1672e-05" C10="3.6503e-06" C12="1.9529e-07"/>
+  <Atom class="HO" Aexch="1182.0" Aelec="428.0" Aind="92.0" Adhf="223.0" Bexp="31.483" C6="9.379e-05" C8="2.607e-06" C10="4.151e-07" C12="0"/>
+  <Atom class="Ogtc" Aexch="199073.0" Aelec="107480.0" Aind="26255.0" Adhf="11095.0" Bexp="37.794" C6="0.00084127" C8="5.1672e-05" C10="3.6503e-06" C12="1.9529e-07"/>
+  <Atom class="Hgtc" Aexch="1182.0" Aelec="428.0" Aind="92.0" Adhf="223.0" Bexp="31.483" C6="9.379e-05" C8="2.607e-06" C10="4.151e-07" C12="0"/>
+ </CustomNonbondedForce>
+</ForceField>

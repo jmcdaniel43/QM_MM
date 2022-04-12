@@ -1,0 +1,25 @@
+molecule He {
+He    30.00000000  30.00000000  30.00000000
+symmetry c1
+no_reorient
+no_com
+}
+
+Chrgfield = QMMM()
+#  q , x , y , z
+Chrgfield.extern.addCharge(2.0, 33.0 , 30.0 , 30.0)
+Chrgfield.extern.addCharge(-1.0, 25.9 , 25.0 , 30.0)
+Chrgfield.extern.addCharge(-1.0, 36.1 , 35.0 , 30.0)
+Chrgfield.extern.addCharge( 1.0, 45.9 , 30.0 , 30.0)
+Chrgfield.extern.addCharge(-1.0, 20.1 , 35.0 , 30.0)
+psi4.set_global_option_python('EXTERN', Chrgfield.extern)
+
+set {
+basis aug-cc-pvdz
+dft_spherical_points 50
+dft_radial_points 12
+scf_type df
+}
+
+energy('PBE')
+

@@ -1,0 +1,306 @@
+
+    -----------------------------------------------------------------------
+          Psi4: An Open-Source Ab Initio Electronic Structure Package
+                               Psi4 1.3.2 release
+
+                         Git: Rev {HEAD} ecbda83 
+
+
+    R. M. Parrish, L. A. Burns, D. G. A. Smith, A. C. Simmonett,
+    A. E. DePrince III, E. G. Hohenstein, U. Bozkaya, A. Yu. Sokolov,
+    R. Di Remigio, R. M. Richard, J. F. Gonthier, A. M. James,
+    H. R. McAlexander, A. Kumar, M. Saitow, X. Wang, B. P. Pritchard,
+    P. Verma, H. F. Schaefer III, K. Patkowski, R. A. King, E. F. Valeev,
+    F. A. Evangelista, J. M. Turney, T. D. Crawford, and C. D. Sherrill,
+    J. Chem. Theory Comput. 13(7) pp 3185--3197 (2017).
+    (doi: 10.1021/acs.jctc.7b00174)
+
+
+                         Additional Contributions by
+    P. Kraus, H. Kruse, M. H. Lechner, M. C. Schieber, R. A. Shaw,
+    A. Alenaizan, R. Galvelis, Z. L. Glick, S. Lehtola, and J. P. Misiewicz
+
+    -----------------------------------------------------------------------
+
+
+    Psi4 started on: Wednesday, 20 November 2019 10:46AM
+
+    Process ID: 29513
+    Host:       login7-d1.pace.gatech.edu
+    PSIDATADIR: /nv/hp22/jmcdaniel43/.conda/envs/RHEL7/share/psi4
+    Memory:     500.0 MiB
+    Threads:    1
+    
+  ==> Input File <==
+
+--------------------------------------------------------------------------
+molecule He {
+He    30.00000000  30.00000000  30.00000000
+symmetry c1
+no_reorient
+no_com
+}
+
+Chrgfield = QMMM()
+#  q , x , y , z
+Chrgfield.extern.addCharge(2.0, 33.0 , 30.0 , 30.0)
+Chrgfield.extern.addCharge(-1.0, 25.9 , 25.0 , 30.0)
+Chrgfield.extern.addCharge(-1.0, 36.1 , 35.0 , 30.0)
+Chrgfield.extern.addCharge( 1.0, 45.9 , 30.0 , 30.0)
+Chrgfield.extern.addCharge(-1.0, 20.1 , 35.0 , 30.0)
+psi4.set_global_option_python('EXTERN', Chrgfield.extern)
+
+set {
+basis aug-cc-pvdz
+dft_spherical_points 302
+dft_radial_points 75
+scf_type df
+}
+
+energy('PBE')
+
+--------------------------------------------------------------------------
+
+*** tstart() called on login7-d1.pace.gatech.edu
+*** at Wed Nov 20 10:46:24 2019
+
+   => Loading Basis Set <=
+
+    Name: AUG-CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1 entry HE         line    50 file /nv/hp22/jmcdaniel43/.conda/envs/RHEL7/share/psi4/basis/aug-cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              RKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Geometry (in Angstrom), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         HE          30.000000000000    30.000000000000    30.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.00156  C =      0.00156 [cm^-1]
+  Rotational constants: A = ************  B =     46.76392  C =     46.76392 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is CORE.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 5
+    Number of basis function: 9
+    Number of Cartesian functions: 9
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: PBE <= 
+
+    PBE GGA Exchange-Correlation Functional
+
+    J.P. Perdew et. al., Phys. Rev. Lett., 77(18), 3865-3868, 1996
+
+
+    Deriv               =              1
+    GGA                 =           TRUE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000     XC_GGA_X_PBE
+
+   => Correlation Functionals <=
+
+    1.0000     XC_GGA_C_PBE
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          22650
+    Total Blocks           =            225
+    Max Points             =            254
+    Max Functions          =              9
+
+   => Loading Basis Set <=
+
+    Name: (AUG-CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1 entry HE         line    39 file /nv/hp22/jmcdaniel43/.conda/envs/RHEL7/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A          9       9       0       0       0       0
+   -------------------------------------------------------
+    Total       9       9       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.360 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               1
+    Memory [MiB]:               369
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):       0.0000
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (AUG-CC-PVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 9
+    Number of basis function: 23
+    Number of Cartesian functions: 25
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  Cached 100.0% of DFT collocation blocks in 0.006 [GiB].
+
+   => External Potential Field:  <= 
+
+    > Charges [a.u.] < 
+
+              Z          x          y          z
+        2.00000   33.00000   30.00000   30.00000
+       -1.00000   25.90000   25.00000   30.00000
+       -1.00000   36.10000   35.00000   30.00000
+        1.00000   45.90000   30.00000   30.00000
+       -1.00000   20.10000   35.00000   30.00000
+
+  Old nuclear repulsion        =    0.000000000000000
+  Additional nuclear repulsion =    0.378845692148201
+  Total nuclear repulsion      =    0.378845692148201
+
+  Minimum eigenvalue in the overlap matrix is 1.7542681229E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Core (One-Electron) Hamiltonian.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-RKS iter   1:    -2.76613984261430   -2.76614e+00   5.57601e-02 DIIS
+   @DF-RKS iter   2:    -2.86509443848056   -9.89546e-02   2.45441e-02 DIIS
+   @DF-RKS iter   3:    -2.89034969905644   -2.52553e-02   6.34328e-04 DIIS
+   @DF-RKS iter   4:    -2.89036918999258   -1.94909e-05   2.86308e-05 DIIS
+   @DF-RKS iter   5:    -2.89036922038523   -3.03927e-08   2.77591e-06 DIIS
+   @DF-RKS iter   6:    -2.89036922063159   -2.46358e-10   4.14357e-08 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Doubly Occupied:                                                      
+
+       1A     -0.772016  
+
+    Virtual:                                                              
+
+       2A     -0.114886     3A      0.161554     4A      0.176693  
+       5A      0.178239     6A      1.182248     7A      2.410475  
+       8A      2.420821     9A      2.421338  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+
+  @DF-RKS Final Energy:    -2.89036922063159
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.3788456921482009
+    One-Electron Energy =                  -4.2445925271196607
+    Two-Electron Energy =                   2.0163215891960742
+    DFT Exchange-Correlation Energy =      -1.0409439748562066
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                         -2.8903692206315919
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:   113.3836      Y:   113.3836      Z:   113.3836
+
+  Electronic Dipole Moment: [e a0]
+     X:  -113.4845      Y:  -113.3854      Z:  -113.3836
+
+  Dipole Moment: [e a0]
+     X:    -0.1009      Y:    -0.0018      Z:     0.0000     Total:     0.1010
+
+  Dipole Moment: [D]
+     X:    -0.2566      Y:    -0.0046      Z:     0.0000     Total:     0.2566
+
+
+*** tstop() called on login7-d1.pace.gatech.edu at Wed Nov 20 10:46:25 2019
+Module time:
+	user time   =       0.43 seconds =       0.01 minutes
+	system time =       0.02 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+Total time:
+	user time   =       0.43 seconds =       0.01 minutes
+	system time =       0.02 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+
+    Psi4 stopped on: Wednesday, 20 November 2019 10:46AM
+    Psi4 wall time for execution: 0:00:00.70
+
+*** Psi4 exiting successfully. Buy a developer a beer!

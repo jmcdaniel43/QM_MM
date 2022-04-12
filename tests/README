@@ -1,0 +1,60 @@
+reference benchmarks were run with unmodified psi4, installed by conda in RHEL7 environment on gemini-cpu cluster.  psi4 version is:
+psi4                      1.3.2+ecbda83    py37h31b3128_0    psi4
+
+these benchmarks incorporate analytic QM/MM interactions from embedded MM point charges
+
+NOTE:  Most of these test require libraries from the Fixed_Voltage_OpenMM repository on Github...
+
+Summary of Tests:
+
+1) RKS_test_He_5Qfield_quadrature_only: 
+   this is a direct test of the Psi4 quadrature implementation of the external MM field for a He ion in a 5 ion field.
+   the MMsystem is input to Psi4, and the MMfield is evaluated directly at every point on the quadrature grid.
+   this is a test of the quadrature implementation in the one-electron potential contribution to the Hamiltonian/Kohn-Sham matrix
+
+   a collection of tests for different angular/radial quadrature settings can be run with the run_tests.sh script
+
+
+2) RKS_test_He_5Qfield_PMEgrid_cutoff:
+   This is the same system as 1), but now the MM field is computed (in part) using a PME sum, evaluated on the PME grid by OpenMM,
+   input to Psi4, and interpolated onto the DFT-quadrature grid.  Thus the difference between 1) and 2) tests both the evaluation
+   of the external potential on the PME grid using OpenMM, as well as interpolation accuracy from the PME to quadrature grid.
+
+   Note that interpolation from PME-to-DFT grid is inaccurate for short-range interactions.  Thus we use a hybrid scheme, where short-range
+   interactions are implemented analytically in Psi4, and only MM interactions beyond a cutoff are computed with OpenMM/PME.
+   The current test-case incorporates the 3 closest ions analytically (in Psi4), and the two farthest ions are incorporated by the OpenMM computed external potential
+
+   a collection of tests for different PMEgrid/cutoff and angular/radial quadrature settings can be run with the run_tests.sh script
+
+3) RKS_test_h2o_5Qfield:
+   similar to 2) but now a water molecule is in the ion field.  Demonstrates that good agreement can be achieved with purely numerical/PME external potential and no analytic embedding,
+   using very large PME grid=375
+
+4) UKS_test_Li_5Qfield:
+   This is similar to test 2), but for open-shell Li atom.  The ion field is the same, and the closest 3 ions are treated analytically, and the two farthest are incorporated
+   by the OpenMM computed external potential.  This tests the quadrature implementation in the Unrestricted-Kohn Sham code
+
+
+5) PME_test_ion_pair_QMregion_exclude:
+   This is a direct test of the evaluation of the external potential on the PME grid by OpenMM.  This example is for a box with two Li-I ion pairs,
+   and prints out the external potential on the PME grid evaluated with the full PME sum compared to a direct "real-space" evaluation of the potential on the grid
+
+6) PME_test_water_droplet
+   Similar to 5), this is a direct test of the evaluation of the external potential on the PME grid for a ~1nm water droplet.  Note that the box lengths are very large,
+   to minimize contribution of water droplet images (which aren't considered in the reference benchmark).  Also the cutoff is large enough that all water molecules should
+   be including in computing real-space Ewald corrections, so that potential is accurate at all grid points.
+
+7) test_bulk_water
+   this is a test of one water QM in bulk water MM.  Two calculations are conducted, first with no analytic MM embedding, and second with 3 water molecules included in analytic embedding.
+   There is good agreement between the calculations when a large PME grid=425 is used.  A third calculation tests a different interpolation scheme (projecting on the PME grid instead of real-space projection),
+   which should exhibit perfect agreement with the first calculation
+
+8) test_water_droplet_orthorhombic_box
+   this is a similar system to 6), but tests a water droplet in both a cubic box as well as an orthorhombic (hexagonal) box.  The point is to check the PME calculation/interpolation scheme
+   for non-cubic, non-rectangular simulation boxes. The new interpolation method (projecting to PME grid) is general to non-orthorhombic boxes, and there is good agreement between the calculations
+   when a sufficiently large PME grid=500 is used.  Note that the box sizes have been increased somewhat to make the systems more similar, since the periodicity is slightly different with the 
+   different box geometries
+
+9) FV_QM_MM_example
+   this is an example of a Fixed-Voltage QM/MM simulation for BMIM/BF4/acetonitrile electrolyte with carbon electrodes.  An acetonitrile molecule is the QM region, 
+   charges are solved using the Poisson solver, and the QM calculation is done with the full electrostatics of the cell
