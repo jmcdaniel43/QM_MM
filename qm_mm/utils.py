@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Helper functions accessed by multiple classes.
-
-Imports
--------
-numpy: Third Party
 """
+import dask.array as da
 import numpy as np
 
 
@@ -17,26 +14,32 @@ def least_mirror_array(i_array, j_array, box):
 
     Parameters
     ----------
-    i_array: NumPy array
+    i_array: Dask Array object
         Position array.
-    j_array: NumPy array
+    j_array: Dask Array object
         Reference array.
     box: list of list of float
         Box vectors from OpenMM.
 
     Returns
     -------
-    r_array: NumPy array
+    r_array: Dask Array object
         Least mirror array of the position array with respect to the
         reference array.
     """
     r_array = i_array - j_array
-    r_array -= (np.array(box[2])[:,np.newaxis,np.newaxis]
-                * np.floor(r_array[:,:,2]/box[2][2]+0.5).T).T
-    r_array -= (np.array(box[1])[:,np.newaxis,np.newaxis]
-                * np.floor(r_array[:,:,1]/box[1][1]+0.5).T).T
-    r_array -= (np.array(box[0])[:,np.newaxis,np.newaxis]
-                * np.floor(r_array[:,:,0]/box[0][0]+0.5).T).T
+    A = da.from_array(box[2])[:,np.newaxis,np.newaxis] 
+    B = da.transpose(da.floor(r_array[:,:,2]/box[2][2]+0.5))
+    C = da.transpose(A * B)
+    r_array = r_array - C
+    A = da.from_array(box[1])[:,np.newaxis,np.newaxis] 
+    B = da.transpose(da.floor(r_array[:,:,1]/box[1][1]+0.5))
+    C = da.transpose(A * B)
+    r_array = r_array - C
+    A = da.from_array(box[0])[:,np.newaxis,np.newaxis] 
+    B = da.transpose(da.floor(r_array[:,:,0]/box[0][0]+0.5))
+    C = da.transpose(A * B)
+    r_array = r_array - C
     return r_array
 
 

@@ -6,7 +6,7 @@ QM/MM/PME
 :Author Email: jpederson6@gatech.edu
 :Project: QM_MM
 :Date Written: March 28, 2022
-:Last Date Modified: April 11, 2022
+:Last Date Modified: May 26, 2022
 
 Summary
 -------
@@ -15,7 +15,7 @@ This package implements single-point energy calculations for the
 QM/MM/PME method described by John Pederson and Professor Jesse 
 McDaniel:
 
-DOI:10.1063/5.00xxxxx
+DOI: `10.1063/5.0087386 <https://aip.scitation.org/doi/10.1063/5.0087386>`_
 
 Installation
 ------------
@@ -27,23 +27,23 @@ repositories must be compiled from source.
 
 The modified openmm requires the following dependencies:
 
-- cython=0.29.17
-- doxygen=1.8.18
-- swig=3.0.12
+- cython
+- doxygen
+- swig
 
 The modified psi4 requires the following dependencies:
 
 - gcc>=4.9
-- gau2grid=1.3.1
-- pint=0.9 or 0.11
-- pydantic=1.5.1
-- libxc=4.3.4
+- gau2grid
+- pint
+- pydantic
+- libxc
 - numpy>=1.19.2
 
 The QM/MM repository requires the following additional dependencies:
 
-- lxml>=4.5.0
-- scipy>=1.4.1
+- lxml
+- scipy
 
 Once the modified psi4 and openmm repositories are built, the QM_MM
 repository may be cloned.  No source requires compilation.
@@ -61,8 +61,8 @@ MMSubsystem, QMSubsystem, and QMMMSystem objects.
 Documentation
 -------------
 
-The documentation for this project can be found `here!
-<http://johnppederson.com/QM_MM/index.html>`_
+The documentation for this project can be found `here
+<http://johnppederson.com/QM_MM/index.html>`_!
 
 Authors
 -------

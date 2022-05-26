@@ -2,15 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 QM/MM system to handle interactions between the QM and MM subsystems.
-
-Imports
--------
-sys: Standard
-numpy: Third Party
-mm_subsystem: Local
-pbc_subsystem: Local
-system: Local
-utils: Local
 """
 import sys
 
@@ -131,31 +122,37 @@ class QMMMSystem(System):
                 charges = self._charges,
                 positions = self._positions,
                 box = self._box,
+                n_threads = self.qm_subsystem.n_threads,
             )
             self.subsystems.append(self.rs_subsystem)
             self.subsystems.append(self.pbc_subsystem)
 
-    def single_point_energy(self, tare=False):
+    def single_point_calculation(self, tare=False, forces=False):
         """
-        Perform a single-point energy calculation for the system.
+        Perform a single-point energy/force calculation for the system.
 
         The energy calculated is effectively the partially
         self-consistent electrostatic interaction energy of the QM
         subsystem and MM subsystem (and extended subsystem, if the
-        QM/MM/PME method is being used.
+        QM/MM/PME method is being used).
 
         Parameters
         ----------
         tare: bool, Optional, default=False
             Determine whether or not to tare the gas-phase energy from
             the calculation.
+        forces: bool, Optional, default=False
+            Determine whether or not to perform Psi4 gradient
+            calculation for forces.
 
         Returns
         -------
         energy: float
-            The electrostatic interaction energy of the QM subsystem
-            with the MM subsystem (and the extended subsytem, if the
-            QM/MM/PME method is being used).
+            The electronic energy of the QM subsystem.
+        forces: NumPy Array object, Optional
+            The forces acting on the QM subsystem and electrostatic
+            forces acting on the analytically embedded point charges if
+            using analytic embedding.
         """
         if self.embedding_method == "hybrid":
             if len(self.embedding_cutoff) != 2:
@@ -185,18 +182,31 @@ class QMMMSystem(System):
         if self.qmmm_pme:
             potential_grid = self.rs_subsystem.build_potential_grid()
             ref_quadrature = self.qm_subsystem.build_ref_quadrature()
-            self.pbc_subsystem.build_pme_exclusions(ref_quadrature)
-            potential_grid = self.pbc_subsystem.apply_pme_exclusions(
-                potential_grid
-            )
-            arguments["external_grid"] = potential_grid
-            arguments["qmmm_pme_gridnumber"] = self.qmmm_pme_gridnumber
-        self.qm_subsystem.calculate_energy(**arguments)
+            if forces:
+                (quad_extd_pot, nuc_extd_pot, nuc_extd_grad) = self.pbc_subsystem.build_extd_pot(
+                    ref_quadrature,
+                    potential_grid,
+                    return_grad=True,
+                )
+                arguments["nuc_extd_grad"] = nuc_extd_grad
+            else:
+                (quad_extd_pot, nuc_extd_pot) = self.pbc_subsystem.build_extd_pot(
+                    ref_quadrature,
+                    potential_grid,
+                )
+            arguments["quad_extd_pot"] = quad_extd_pot
+            arguments["nuc_extd_pot"] = nuc_extd_pot
+        self.qm_subsystem.compute_energy(**arguments)
         energy = self.qm_subsystem.energy
         if tare:
-            self.qm_subsystem.calculate_gas_phase_energy()
+            self.qm_subsystem.compute_gas_phase_energy()
             energy -= self.qm_subsystem.gas_phase_energy
-        return energy
+        if forces:
+            self.qm_subsystem.compute_forces(**arguments)
+            forces = self.qm_subsystem.forces
+            return (energy, forces)
+        else:
+            return energy
 
     def generate_embedding_list(self, threshold=None):
         """

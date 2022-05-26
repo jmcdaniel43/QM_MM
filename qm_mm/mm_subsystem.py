@@ -2,16 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 OpenMM interface to model the MM subsystem of the QM/MM system.
-
-Imports
--------
-sys: Standard
-numpy: Third Party
-simtk.openmm: Third Party
-simtk.unit: Third Party
-shared: Local
-system: Local
-utils: Local
 """
 import sys
 

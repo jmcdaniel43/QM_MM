@@ -3,21 +3,9 @@
 """
 QM/MM, a method to perform single-point QM/MM calculations using the 
 QM/MM/PME direct electrostatic QM/MM embedding method.
-
-Imports
--------
-copy: Standard
-os: Standard
-sys: Standard
-numpy: Third Party
-mm_subsystem: Local
-qm_subsystem: Local
-qmmm_system: Local
-shared: Local
-utils: Local
 """
 __author__ = "Jesse McDaniel and John Pederson"
-__version__ = '0.9.0'
+__version__ = '1.1.0'
 
 import copy
 import os

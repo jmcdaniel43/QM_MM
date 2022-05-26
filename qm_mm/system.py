@@ -11,19 +11,19 @@ class System:
 
     Parameters
     ----------
-    residue_part_list: list of list of int, Optional, default=None
+    residue_part_list : list of list of int, Optional, default=None
         The indices of all particles in the system grouped by residue.
-    group_part_dict: dict of list of list of int, Optional, default=None
+    group_part_dict : dict of list of list of int, Optional, default=None
         The indices of particles in the system grouped by a given key.
         Example keys include "qm_atom", "qm_drude", and "analytic".
-    element_symbols: list of str, Optional, default=None
+    element_symbols : list of str, Optional, default=None
         The element symbols of all particles in the system.
-    charges: NumPy Array object, Optional, default=None
+    charges : NumPy Array object, Optional, default=None
         The charges of all particles in the system, in proton charge
         units.
-    positions: NumPy Array object, Optional, default=None
+    positions : NumPy Array object, Optional, default=None
         The positions of all particles in the system, in Angstroms.
-    box: NumPy Array object, Optional, default=None
+    box : NumPy Array object, Optional, default=None
         The box vectors defining the periodic system, in Angstroms.
     """
     nm_to_bohr = 18.89726

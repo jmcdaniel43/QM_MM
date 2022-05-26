@@ -2,15 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Psi4 interface to model the QM subsystem of the QM/MM system.
-
-Imports
--------
-copy: Standard
-sys: Standard
-psi4: Third Party
-psi4.core: Third Party
-system: Local
-utils: Local
 """
 import copy
 import sys
@@ -92,17 +83,19 @@ class QMSubsystem(System):
         self.qm_spin = qm_spin
         self.scf_type = scf_type
         self.qmmm_pme = qmmm_pme
+        self.n_threads = n_threads
         psi4.set_num_threads(n_threads)
         options = {
             "basis": self.basis_set,
             "dft_spherical_points": self.quadrature_spherical,
             "dft_radial_points": self.quadrature_radial,
             "scf_type": self.scf_type,
-            "qmmm": str(self.qmmm_pme).lower(),
+            "pme": str(self.qmmm_pme).lower(),
         }
         psi4.set_options(options)
         self.read_guess = read_guess
         self.wfn = None
+        self.charge_field = None
         self.group_part_dict = group_part_dict
         self.element_symbols = element_symbols
         self.charges = charges
@@ -125,7 +118,7 @@ class QMSubsystem(System):
         # Add MM charges in QMregion for analytic embedding.
         if "analytic" in self._group_part_dict:
             embedding_list = self._group_part_dict["analytic"]
-            charge_field = psi4.QMMM()
+            charge_field = []
             for residue in embedding_list:
                 nth_centroid = [sum([self._positions[atom][k] for atom in residue])
                                 / len(residue) for k in range(3)]
@@ -136,14 +129,16 @@ class QMSubsystem(System):
                 )
                 displacement = np.array(new_centroid) - np.array(nth_centroid)
                 for atom in residue:
-                    position = self._positions[atom] + displacement + qm_centroid
-                    charge_field.extern.addCharge(
-                        self._charges[atom],
-                        position[0],
-                        position[1],
-                        position[2],
+                    position = (self._positions[atom]
+                                + displacement
+                                + qm_centroid) * self.angstrom_to_bohr
+                    charge_field.append(
+                        [
+                            self._charges[atom],
+                            [position[0],position[1],position[2]],
+                        ]
                     )
-            psi4.core.set_global_option_python("EXTERN", charge_field.extern)
+            self.charge_field = charge_field
         # Construct geometry string.
         geometrystring = (' \n '
                           + str(self.qm_charge) + " " + str(self.qm_spin) + " \n"
@@ -183,73 +178,57 @@ class QMSubsystem(System):
         ref_quadrature = ref_v.get_np_xyzw()
         return ref_quadrature
 
-    def calculate_energy(
-            self,
-            external_grid=None,
-            qmmm_pme_gridnumber=None,
-        ):
+    def compute_energy(self, quad_extd_pot=None, nuc_extd_pot=None):
         """
         Perform the Psi4 energy calculation.
 
         Parameters
         ----------
-        external_grid: NumPy Array object, Optional, default=None
-            The external potential grid, if one is performing a
-            QM/MM/PME calculation.
-        qmmm_pme_gridnumber: int, Optional, default=None
-            The number of grid points along each of the box vectors
-            defining the principal cell of the system.
+        quad_extd_pot: NumPy Array object, Optional, default=None
+            The extended potential evaluated on the Psi4 quadrature grid.
+        nuc_extd_pot: NumPy Array object, Optional, default=None
+            The extended potential evaluated at the nuclear coordinates.
         """
+        options = {}
         if self.qmmm_pme:
-            psi4.core.set_local_option("SCF","QMMM", self.qmmm_pme)
-            (self.energy, self.wfn) = psi4.energy(
+            psi4.core.set_local_option("SCF","PME", self.qmmm_pme)
+            options["quad_extd_pot"] = quad_extd_pot
+            options["nuc_extd_pot"] = nuc_extd_pot
+        if self.charge_field:
+            options["external_potentials"] = self.charge_field
+        (self.energy, self.wfn) = psi4.energy(
                 self.functional,
                 return_wfn=True,
-                pme_grid_size=qmmm_pme_gridnumber,
-                vexternal_grid=external_grid,
-                box=self._bohr_box,
-                interpolation_method="interpn",
-            )
-        else:
-            psi4.core.set_local_option("SCF","QMMM", self.qmmm_pme)
-            (self.energy, self.wfn) = psi4.energy(
-                self.functional,
-                return_wfn=True,
-            )
-
-    def calculate_gas_phase_energy(self):
-        """
-        Calculate gas-phase energy of QM subsystem.
-
-        This method is under construction.
-        """
-        #self._group_part_dict = {"qm_atom": self._group_part_dict["qm_atom"]}
-        #self.generate_geometry()
-        #psi4.core.set_local_option("SCF","QMMM", False)
-        qm_atom_list = self._group_part_dict["qm_atom"]
-        qm_centroid = np.array([sum([self._positions[atom][k] 
-                                for atom in qm_atom_list])
-                                / len(qm_atom_list) for k in range(3)])
-        if self.qm_spin > 1:
-            psi4.core.set_local_option("SCF", "REFERENCE", "UKS")
-        geometrystring = (' \n '
-                          + str(self.qm_charge) + " " + str(self.qm_spin) + " \n"
-                          + " noreorient  \n  " + " nocom  \n  ")
-        for atom in qm_atom_list:
-            displacement = -qm_centroid
-            position = self._positions[atom] + displacement
-            geometrystring = (geometrystring + " " 
-                              + str(self._element_symbols[atom]) + " " 
-                              + str(position[0]) + " " 
-                              + str(position[1]) + " " 
-                              + str(position[2]) + " \n")
-        geometrystring = geometrystring + ' symmetry c1 \n '
-        # Create Psi4 geometry object.
-        self.geometry = psi4.geometry(geometrystring)
-        (self.gas_phase_energy, self.gas_phase_wfn) = psi4.energy(
-            self.functional,
-            return_wfn=True,
+                **options,
         )
+
+    def compute_forces(self, quad_extd_pot=None, nuc_extd_pot=None, nuc_extd_grad=None):
+        """
+        Perform the Psi4 force calculation.
+
+        Parameters
+        ----------
+        quad_extd_pot: NumPy Array object, Optional, default=None
+            The extended potential evaluated on the Psi4 quadrature grid.
+        nuc_extd_pot: NumPy Array object, Optional, default=None
+            The extended potential evaluated at the nuclear coordinates.
+        nuc_extd_grad: NumPy Array object, Optional, default=None
+            The gradient of the extended potential evaluated at the
+            nuclear coordinates.
+        """
+        options = {}
+        if self.qmmm_pme:
+            psi4.core.set_local_option("SCF","PME", self.qmmm_pme)
+            options["quad_extd_pot"] = quad_extd_pot
+            options["nuc_extd_pot"] = nuc_extd_pot
+            options["nuc_extd_grad"] = nuc_extd_grad
+        if self.charge_field:
+            options["external_potentials"] = self.charge_field
+        self.forces = -np.asarray(psi4.gradient(
+            self.functional,
+            return_wfn=False,
+            **options,
+        ))
 
     @property
     def box(self):
