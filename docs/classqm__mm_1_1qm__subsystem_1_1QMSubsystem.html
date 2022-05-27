@@ -93,10 +93,10 @@ def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self, ba
 <tr class="separator:a49eb01be9d9f642f203c0bea6c217527"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07a03e8a4339115e0bff410a6a8b4855"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qm__subsystem_1_1QMSubsystem.html#a07a03e8a4339115e0bff410a6a8b4855">build_ref_quadrature</a> (self)</td></tr>
 <tr class="separator:a07a03e8a4339115e0bff410a6a8b4855"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a839e44c7606fa22c27d51f85177e16c8"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qm__subsystem_1_1QMSubsystem.html#a839e44c7606fa22c27d51f85177e16c8">calculate_energy</a> (self, external_grid=None, qmmm_pme_gridnumber=None)</td></tr>
-<tr class="separator:a839e44c7606fa22c27d51f85177e16c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45bb779c42f5d2ff9ad46f1a86be3c58"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qm__subsystem_1_1QMSubsystem.html#a45bb779c42f5d2ff9ad46f1a86be3c58">calculate_gas_phase_energy</a> (self)</td></tr>
-<tr class="separator:a45bb779c42f5d2ff9ad46f1a86be3c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e79f126b132211aa077366114b460f7"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qm__subsystem_1_1QMSubsystem.html#a0e79f126b132211aa077366114b460f7">compute_energy</a> (self, quad_extd_pot=None, nuc_extd_pot=None)</td></tr>
+<tr class="separator:a0e79f126b132211aa077366114b460f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc0576e8f7232b665f211ec07c5839b5"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qm__subsystem_1_1QMSubsystem.html#adc0576e8f7232b665f211ec07c5839b5">compute_forces</a> (self, quad_extd_pot=None, nuc_extd_pot=None, nuc_extd_grad=None)</td></tr>
+<tr class="separator:adc0576e8f7232b665f211ec07c5839b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a598dcf65620a3a661133bd958a2dbbf0"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qm__subsystem_1_1QMSubsystem.html#a598dcf65620a3a661133bd958a2dbbf0">box</a> (self)</td></tr>
 <tr class="separator:a598dcf65620a3a661133bd958a2dbbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39ec4736bca749953681b3e53399e431"><td class="memItemLeft" align="right" valign="top"><a id="a39ec4736bca749953681b3e53399e431"></a>
@@ -158,12 +158,18 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a0ccedde605b30cd7a1bcdd43b4e03db2"><td class="memItemLeft" align="right" valign="top"><a id="a0ccedde605b30cd7a1bcdd43b4e03db2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>qmmm_pme</b></td></tr>
 <tr class="separator:a0ccedde605b30cd7a1bcdd43b4e03db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9072fce15e404817696e4f428ef3454b"><td class="memItemLeft" align="right" valign="top"><a id="a9072fce15e404817696e4f428ef3454b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>n_threads</b></td></tr>
+<tr class="separator:a9072fce15e404817696e4f428ef3454b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8214ed26d520f74493462229e141cdc1"><td class="memItemLeft" align="right" valign="top"><a id="a8214ed26d520f74493462229e141cdc1"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>read_guess</b></td></tr>
 <tr class="separator:a8214ed26d520f74493462229e141cdc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5433731e1f7ecba4f192d6c86b5b1564"><td class="memItemLeft" align="right" valign="top"><a id="a5433731e1f7ecba4f192d6c86b5b1564"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>wfn</b></td></tr>
 <tr class="separator:a5433731e1f7ecba4f192d6c86b5b1564"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa982fe283283cce95b130efa653bc46"><td class="memItemLeft" align="right" valign="top"><a id="aaa982fe283283cce95b130efa653bc46"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>charge_field</b></td></tr>
+<tr class="separator:aaa982fe283283cce95b130efa653bc46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a21042c0a3337a54d4ca36f536c52df"><td class="memItemLeft" align="right" valign="top"><a id="a0a21042c0a3337a54d4ca36f536c52df"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>group_part_dict</b></td></tr>
 <tr class="separator:a0a21042c0a3337a54d4ca36f536c52df"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,6 +188,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ae485557f904e5409f3dfc32f550b1eab"><td class="memItemLeft" align="right" valign="top"><a id="ae485557f904e5409f3dfc32f550b1eab"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>geometry</b></td></tr>
 <tr class="separator:ae485557f904e5409f3dfc32f550b1eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb0df2996e8328f844244e121df68bea"><td class="memItemLeft" align="right" valign="top"><a id="aeb0df2996e8328f844244e121df68bea"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>forces</b></td></tr>
+<tr class="separator:aeb0df2996e8328f844244e121df68bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -286,14 +295,14 @@ ref_quadrature: NumPy Array object
 </pre> 
 </div>
 </div>
-<a id="a839e44c7606fa22c27d51f85177e16c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a839e44c7606fa22c27d51f85177e16c8">&#9670;&nbsp;</a></span>calculate_energy()</h2>
+<a id="a0e79f126b132211aa077366114b460f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e79f126b132211aa077366114b460f7">&#9670;&nbsp;</a></span>compute_energy()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def qm_mm.qm_subsystem.QMSubsystem.calculate_energy </td>
+          <td class="memname">def qm_mm.qm_subsystem.QMSubsystem.compute_energy </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -302,13 +311,13 @@ ref_quadrature: NumPy Array object
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>external_grid</em> = <code>None</code>, </td>
+          <td class="paramname"><em>quad_extd_pot</em> = <code>None</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>qmmm_pme_gridnumber</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>nuc_extd_pot</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -321,33 +330,61 @@ ref_quadrature: NumPy Array object
 
 Parameters
 ----------
-external_grid: NumPy Array object, Optional, default=None
-    The external potential grid, if one is performing a
-    QM/MM/PME calculation.
-qmmm_pme_gridnumber: int, Optional, default=None
-    The number of grid points along each of the box vectors
-    defining the principal cell of the system.
+quad_extd_pot: NumPy Array object, Optional, default=None
+    The extended potential evaluated on the Psi4 quadrature grid.
+nuc_extd_pot: NumPy Array object, Optional, default=None
+    The extended potential evaluated at the nuclear coordinates.
 </pre> 
 </div>
 </div>
-<a id="a45bb779c42f5d2ff9ad46f1a86be3c58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45bb779c42f5d2ff9ad46f1a86be3c58">&#9670;&nbsp;</a></span>calculate_gas_phase_energy()</h2>
+<a id="adc0576e8f7232b665f211ec07c5839b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc0576e8f7232b665f211ec07c5839b5">&#9670;&nbsp;</a></span>compute_forces()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def qm_mm.qm_subsystem.QMSubsystem.calculate_gas_phase_energy </td>
+          <td class="memname">def qm_mm.qm_subsystem.QMSubsystem.compute_forces </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>quad_extd_pot</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>nuc_extd_pot</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>nuc_extd_grad</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Calculate gas-phase energy of QM subsystem.
+<pre class="fragment">Perform the Psi4 force calculation.
 
-This method is under construction.
+Parameters
+----------
+quad_extd_pot: NumPy Array object, Optional, default=None
+    The extended potential evaluated on the Psi4 quadrature grid.
+nuc_extd_pot: NumPy Array object, Optional, default=None
+    The extended potential evaluated at the nuclear coordinates.
+nuc_extd_grad: NumPy Array object, Optional, default=None
+    The gradient of the extended potential evaluated at the
+    nuclear coordinates.
 </pre> 
 </div>
 </div>

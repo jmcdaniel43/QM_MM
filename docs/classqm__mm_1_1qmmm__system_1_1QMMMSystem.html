@@ -89,8 +89,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1fd938c8079d26e441cc5b8233f1f8ba"><td class="memItemLeft" align="right" valign="top"><a id="a1fd938c8079d26e441cc5b8233f1f8ba"></a>
 def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self, qm_subsystem, mm_subsystem, group_part_dict, embedding_cutoff=0, embedding_method=&quot;none&quot;, qmmm_pme=False, qmmm_pme_gridnumber=100, qmmm_pme_alpha=5.0)</td></tr>
 <tr class="separator:a1fd938c8079d26e441cc5b8233f1f8ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab024212276cd08ca7f5ff33dd0746186"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qmmm__system_1_1QMMMSystem.html#ab024212276cd08ca7f5ff33dd0746186">single_point_energy</a> (self, tare=False)</td></tr>
-<tr class="separator:ab024212276cd08ca7f5ff33dd0746186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad29368c5685bab841eb97dc60903cfcb"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qmmm__system_1_1QMMMSystem.html#ad29368c5685bab841eb97dc60903cfcb">single_point_calculation</a> (self, tare=False, forces=False)</td></tr>
+<tr class="separator:ad29368c5685bab841eb97dc60903cfcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14572863dbb3433e44b6faae3ce90ebc"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1qmmm__system_1_1QMMMSystem.html#a14572863dbb3433e44b6faae3ce90ebc">generate_embedding_list</a> (self, threshold=None)</td></tr>
 <tr class="separator:a14572863dbb3433e44b6faae3ce90ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0ac3c9a1583f33e3c8301d57b7cff20"><td class="memItemLeft" align="right" valign="top"><a id="ab0ac3c9a1583f33e3c8301d57b7cff20"></a>
@@ -288,14 +288,14 @@ embedding_list: list of tuple of int
 </pre> 
 </div>
 </div>
-<a id="ab024212276cd08ca7f5ff33dd0746186"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab024212276cd08ca7f5ff33dd0746186">&#9670;&nbsp;</a></span>single_point_energy()</h2>
+<a id="ad29368c5685bab841eb97dc60903cfcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad29368c5685bab841eb97dc60903cfcb">&#9670;&nbsp;</a></span>single_point_calculation()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def qm_mm.qmmm_system.QMMMSystem.single_point_energy </td>
+          <td class="memname">def qm_mm.qmmm_system.QMMMSystem.single_point_calculation </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -304,7 +304,13 @@ embedding_list: list of tuple of int
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>tare</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>tare</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>forces</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -313,25 +319,30 @@ embedding_list: list of tuple of int
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Perform a single-point energy calculation for the system.
+<pre class="fragment">Perform a single-point energy/force calculation for the system.
 
 The energy calculated is effectively the partially
 self-consistent electrostatic interaction energy of the QM
 subsystem and MM subsystem (and extended subsystem, if the
-QM/MM/PME method is being used.
+QM/MM/PME method is being used).
 
 Parameters
 ----------
 tare: bool, Optional, default=False
     Determine whether or not to tare the gas-phase energy from
     the calculation.
+forces: bool, Optional, default=False
+    Determine whether or not to perform Psi4 gradient
+    calculation for forces.
 
 Returns
 -------
 energy: float
-    The electrostatic interaction energy of the QM subsystem
-    with the MM subsystem (and the extended subsytem, if the
-    QM/MM/PME method is being used).
+    The electronic energy of the QM subsystem.
+forces: NumPy Array object, Optional
+    The forces acting on the QM subsystem and electrostatic
+    forces acting on the analytically embedded point charges if
+    using analytic embedding.
 </pre> 
 </div>
 </div>

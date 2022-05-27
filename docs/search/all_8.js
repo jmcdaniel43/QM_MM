@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['residue_5fpart_5flist_18',['residue_part_list',['../classqm__mm_1_1system_1_1System.html#a44fbd7b8ec94d7a2beeddcd7b511def6',1,'qm_mm::system::System']]]
+  ['qmmmsystem_19',['QMMMSystem',['../classqm__mm_1_1qmmm__system_1_1QMMMSystem.html',1,'qm_mm::qmmm_system']]],
+  ['qmsubsystem_20',['QMSubsystem',['../classqm__mm_1_1qm__subsystem_1_1QMSubsystem.html',1,'qm_mm::qm_subsystem']]]
 ];

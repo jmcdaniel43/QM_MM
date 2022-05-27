@@ -68,7 +68,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -87,19 +86,30 @@ Inheritance diagram for qm_mm.pbc_subsystem.PBCSubsystem:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6082c92da2ef1238085a46db4952a0d6"><td class="memItemLeft" align="right" valign="top"><a id="a6082c92da2ef1238085a46db4952a0d6"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self, qmmm_pme_gridnumber, qmmm_pme_alpha, group_part_dict, charges, positions, box)</td></tr>
-<tr class="separator:a6082c92da2ef1238085a46db4952a0d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1ccdba5ddea102c9fcbdaa24a7f3dbc"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#af1ccdba5ddea102c9fcbdaa24a7f3dbc">build_pme_exclusions</a> (self, ref_quadrature)</td></tr>
-<tr class="separator:af1ccdba5ddea102c9fcbdaa24a7f3dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe30f099ca5245648cfa750944aa477"><td class="memItemLeft" align="right" valign="top"><a id="aebe30f099ca5245648cfa750944aa477"></a>
+def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self, qmmm_pme_gridnumber, qmmm_pme_alpha, group_part_dict, charges, positions, box, n_threads=1)</td></tr>
+<tr class="separator:aebe30f099ca5245648cfa750944aa477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acee724dbb8e38b580003380b92b0df02"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#acee724dbb8e38b580003380b92b0df02">build_extd_pot</a> (self, ref_quadrature, extd_pot, return_grad=False)</td></tr>
+<tr class="separator:acee724dbb8e38b580003380b92b0df02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85c7a3882624bff185dbc5868ec29b39"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#a85c7a3882624bff185dbc5868ec29b39">build_pme_exclusions</a> (self, points, inverse_box)</td></tr>
+<tr class="separator:a85c7a3882624bff185dbc5868ec29b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80af1fc5f32551ac8d94f5cbb9c81439"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#a80af1fc5f32551ac8d94f5cbb9c81439">apply_pme_exclusions</a> (self, external_grid)</td></tr>
 <tr class="separator:a80af1fc5f32551ac8d94f5cbb9c81439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a133850d1b81165082a2990a37fafa9fc"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#a133850d1b81165082a2990a37fafa9fc">interp_extd_pot</a> (self, points, grid, extd_pot_3d, inverse_box)</td></tr>
+<tr class="separator:a133850d1b81165082a2990a37fafa9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8732bd738cf2b1fb8e209b40104eacf"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#ac8732bd738cf2b1fb8e209b40104eacf">interp_extd_grad</a> (self, points, grid, extd_pot_3d, inverse_box)</td></tr>
+<tr class="separator:ac8732bd738cf2b1fb8e209b40104eacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cb0cf5cd84ad4f8573d85d5bbcdcaa2"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#a9cb0cf5cd84ad4f8573d85d5bbcdcaa2">project_to_pme_grid</a> (self, points, inverse_box)</td></tr>
+<tr class="separator:a9cb0cf5cd84ad4f8573d85d5bbcdcaa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a718b9bb27f38fd671cc9801f69d47274"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#a718b9bb27f38fd671cc9801f69d47274">box</a> (self)</td></tr>
 <tr class="separator:a718b9bb27f38fd671cc9801f69d47274"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e67847784909f35f08e1021af6cdd56"><td class="memItemLeft" align="right" valign="top"><a id="a0e67847784909f35f08e1021af6cdd56"></a>
 def&#160;</td><td class="memItemRight" valign="bottom"><b>box</b> (self, box)</td></tr>
 <tr class="separator:a0e67847784909f35f08e1021af6cdd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classqm__mm_1_1system_1_1System"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classqm__mm_1_1system_1_1System')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classqm__mm_1_1system_1_1System.html">qm_mm.system.System</a></td></tr>
+<tr class="memitem:a08ee29c81004f8dd178ba0c7e9444909 inherit pub_methods_classqm__mm_1_1system_1_1System"><td class="memItemLeft" align="right" valign="top"><a id="a08ee29c81004f8dd178ba0c7e9444909"></a>
+def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self, <a class="el" href="classqm__mm_1_1system_1_1System.html#a44fbd7b8ec94d7a2beeddcd7b511def6">residue_part_list</a>=None, <a class="el" href="classqm__mm_1_1system_1_1System.html#ab49d33a7dba0eb16f7346566bd26cbef">group_part_dict</a>=None, <a class="el" href="classqm__mm_1_1system_1_1System.html#adf60ce7a113abf3aa1226ff87d1ade02">element_symbols</a>=None, <a class="el" href="classqm__mm_1_1system_1_1System.html#a97f9756be73dca680e396567352f09ef">charges</a>=None, <a class="el" href="classqm__mm_1_1system_1_1System.html#a3e5ae0621cc2d5124cd871f5531d3d8a">positions</a>=None, <a class="el" href="classqm__mm_1_1system_1_1System.html#a9c3bd1abdd6ba3655f07bbfb67dcb515">box</a>=None)</td></tr>
+<tr class="separator:a08ee29c81004f8dd178ba0c7e9444909 inherit pub_methods_classqm__mm_1_1system_1_1System"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44fbd7b8ec94d7a2beeddcd7b511def6 inherit pub_methods_classqm__mm_1_1system_1_1System"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1system_1_1System.html#a44fbd7b8ec94d7a2beeddcd7b511def6">residue_part_list</a> (self)</td></tr>
 <tr class="separator:a44fbd7b8ec94d7a2beeddcd7b511def6 inherit pub_methods_classqm__mm_1_1system_1_1System"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bd9582008bb2d62c8712a1a4778e7ee inherit pub_methods_classqm__mm_1_1system_1_1System"><td class="memItemLeft" align="right" valign="top"><a id="a7bd9582008bb2d62c8712a1a4778e7ee"></a>
@@ -126,11 +136,6 @@ def&#160;</td><td class="memItemRight" valign="bottom"><b>charges</b> (self, cha
 def&#160;</td><td class="memItemRight" valign="bottom"><b>positions</b> (self, positions)</td></tr>
 <tr class="separator:a9df8dae3f7a826a4501e98edf1b1d5ce inherit pub_methods_classqm__mm_1_1system_1_1System"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a3a9c551cb66de84ead96af666eb21b22"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqm__mm_1_1pbc__subsystem_1_1PBCSubsystem.html#a3a9c551cb66de84ead96af666eb21b22">project_to_pme_grid</a> (points, inverse_box, pme_gridnumber)</td></tr>
-<tr class="separator:a3a9c551cb66de84ead96af666eb21b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a5e321ae3c27a40bbfb5ca0d3ce23fe18"><td class="memItemLeft" align="right" valign="top"><a id="a5e321ae3c27a40bbfb5ca0d3ce23fe18"></a>
@@ -151,6 +156,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ae7aaba3c9a06a72a56f7517ef74171e4"><td class="memItemLeft" align="right" valign="top"><a id="ae7aaba3c9a06a72a56f7517ef74171e4"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>box</b></td></tr>
 <tr class="separator:ae7aaba3c9a06a72a56f7517ef74171e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bbe40461ad8cb5ab072929877d1ea31"><td class="memItemLeft" align="right" valign="top"><a id="a1bbe40461ad8cb5ab072929877d1ea31"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>n_threads</b></td></tr>
+<tr class="separator:a1bbe40461ad8cb5ab072929877d1ea31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78bc5bd2251197a484db1c86be2cac90"><td class="memItemLeft" align="right" valign="top"><a id="a78bc5bd2251197a484db1c86be2cac90"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>pme_xyz</b></td></tr>
 <tr class="separator:a78bc5bd2251197a484db1c86be2cac90"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,6 +204,8 @@ positions: NumPy Array object
     The positions of all particles in the system, in Angstroms.
 box: NumPy Array object
     The box vectors defining the periodic system, in Angstroms.
+n_threads: int, Optional, default=1
+    Number of threads across which to parallelize the QM calculation.
 </pre> </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a80af1fc5f32551ac8d94f5cbb9c81439"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a80af1fc5f32551ac8d94f5cbb9c81439">&#9670;&nbsp;</a></span>apply_pme_exclusions()</h2>
@@ -226,7 +236,7 @@ box: NumPy Array object
 
 Parameters
 ----------
-external_grid: list of float
+external_grid: NumPy Array object
     The external potential grid calculated by OpenMM.
 
 Returns
@@ -260,8 +270,70 @@ external_grid: NumPy Array object
 
 </div>
 </div>
-<a id="af1ccdba5ddea102c9fcbdaa24a7f3dbc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af1ccdba5ddea102c9fcbdaa24a7f3dbc">&#9670;&nbsp;</a></span>build_pme_exclusions()</h2>
+<a id="acee724dbb8e38b580003380b92b0df02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acee724dbb8e38b580003380b92b0df02">&#9670;&nbsp;</a></span>build_extd_pot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def qm_mm.pbc_subsystem.PBCSubsystem.build_extd_pot </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ref_quadrature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extd_pot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_grad</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Build extended potential grids to pass to Psi4.
+
+Parameters
+----------
+ref_quadrature: NumPy Array object
+    A reference quadrature grid from Psi4 with the appropriate
+    geometry of the system.
+extd_pot: NumPy Array object
+    The extended potential provided by OpenMM.
+return_grad: bool, Optional, default=False
+    Determine whether or not to return the gradient of the
+    extended potential at the nuclear coordinates.
+
+Returns
+-------
+quad_extd_pot: NumPy Array object
+    The extended potential evaluated on the Psi4 quadrature grid.
+nuc_extd_pot: NumPy Array object
+    The extended potential evaluated at the nuclear coordinates.
+nuc_extd_grad: NumPy Array object, Optional
+    The gradient of the extended potential evaluated at the
+    nuclear coordinates.
+</pre> 
+</div>
+</div>
+<a id="a85c7a3882624bff185dbc5868ec29b39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85c7a3882624bff185dbc5868ec29b39">&#9670;&nbsp;</a></span>build_pme_exclusions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -276,7 +348,13 @@ external_grid: NumPy Array object
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ref_quadrature</em>&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>inverse_box</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -291,24 +369,28 @@ The points include the region containing the quadrature grid.
 
 Parameters
 ----------
-ref_quadrature: NumPy Array object
-    A reference quadrature constructed from the geometry of the
-    QM subsystem.
+points: NumPy Array object
+    The grid points to be excluded.
+inverse_box: NumPy Array object
+    The inverse box vectors, in inverse Bohr.
 </pre> 
 </div>
 </div>
-<a id="a3a9c551cb66de84ead96af666eb21b22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a9c551cb66de84ead96af666eb21b22">&#9670;&nbsp;</a></span>project_to_pme_grid()</h2>
+<a id="ac8732bd738cf2b1fb8e209b40104eacf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8732bd738cf2b1fb8e209b40104eacf">&#9670;&nbsp;</a></span>interp_extd_grad()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">def qm_mm.pbc_subsystem.PBCSubsystem.project_to_pme_grid </td>
+          <td class="memname">def qm_mm.pbc_subsystem.PBCSubsystem.interp_extd_grad </td>
           <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>points</em>, </td>
         </tr>
@@ -316,13 +398,19 @@ ref_quadrature: NumPy Array object
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>inverse_box</em>, </td>
+          <td class="paramname"><em>grid</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>pme_gridnumber</em>&#160;</td>
+          <td class="paramname"><em>extd_pot_3d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>inverse_box</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -330,11 +418,123 @@ ref_quadrature: NumPy Array object
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
+</div><div class="memdoc">
+<pre class="fragment">Create the chain rule for the extended potential on the nuclei.
+
+Parameters
+----------
+points: NumPy Array object
+    The grid points to be interpolated into the external
+    potential grid.
+grid: tuple of NumPy Array object
+    Tuple of grid axis values.
+extd_pot_3d: NumPy Array object
+    The 3d extended potential grid.
+inverse_box: NumPy Array object
+    The inverse of the box vectors, in inverse Bohr.
+
+Returns
+-------
+extd_grad: NumPy Array object
+    The gradient of the interpolated extended potential values
+    at the points.
+</pre> 
+</div>
+</div>
+<a id="a133850d1b81165082a2990a37fafa9fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a133850d1b81165082a2990a37fafa9fc">&#9670;&nbsp;</a></span>interp_extd_pot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def qm_mm.pbc_subsystem.PBCSubsystem.interp_extd_pot </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>grid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extd_pot_3d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>inverse_box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Builds the extended potential to pass to the quadrature.
+
+Parameters
+----------
+points: NumPy Array object
+    The grid points to be interpolated into the external
+    potential grid.
+grid: tuple of NumPy Array object
+    Tuple of grid axis values.
+extd_pot_3d: NumPy Array object
+    The 3d extended potential grid.
+inverse_box: NumPy Array object
+    The inverse of the box vectors, in inverse Bohr.
+
+Returns
+-------
+interp_points: NumPy Array object
+    The interpolated extended potential values at the points.
+</pre> 
+</div>
+</div>
+<a id="a9cb0cf5cd84ad4f8573d85d5bbcdcaa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cb0cf5cd84ad4f8573d85d5bbcdcaa2">&#9670;&nbsp;</a></span>project_to_pme_grid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def qm_mm.pbc_subsystem.PBCSubsystem.project_to_pme_grid </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>inverse_box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
 </div><div class="memdoc">
 <pre class="fragment">Project points onto a PME grid in reciprocal space.
 
@@ -350,12 +550,9 @@ points: NumPy Array object
 inverse_box: NumPy Array object
     The inverse of the box vector defining the principal cell of
     the system, in inverse Bohr.
-pme_gridnumber: int
-    The number of grid points along each box vector within the
-    system.
 
-Return
-------
+Returns
+-------
 scaled_grid_points: NumPy Array object
     The projected points in reciprocal-space, in inverse Bohr.
 </pre> 

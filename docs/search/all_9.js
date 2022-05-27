@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['single_5fpoint_5fenergy_19',['single_point_energy',['../classqm__mm_1_1qmmm__system_1_1QMMMSystem.html#ab024212276cd08ca7f5ff33dd0746186',1,'qm_mm::qmmm_system::QMMMSystem']]],
-  ['system_20',['System',['../classqm__mm_1_1system_1_1System.html',1,'qm_mm::system']]]
+  ['residue_5fpart_5flist_21',['residue_part_list',['../classqm__mm_1_1system_1_1System.html#a44fbd7b8ec94d7a2beeddcd7b511def6',1,'qm_mm::system::System']]]
 ];
