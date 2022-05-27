@@ -3,11 +3,6 @@
 """
 QM/MM, a method to perform single-point QM/MM calculations using the 
 QM/MM/PME direct electrostatic QM/MM embedding method.
-
-Imports
--------
-os: Standard
-sys: Standard
 """
 import os
 import sys
@@ -74,7 +69,8 @@ def main():
         qmmm_pme_alpha=qmmm_pme_alpha,
     )
     # Perform calculations.
-    cutoff_list = [0, 3, 4.5, 6, 7.5, 9, 10.5, 12, 13.5, 15, 16.5, 18]
+    cutoff_list = [3, 4.5, 6, 7.5, 9, 10.5, 12, 13.5, 15, 16.5, 18]
+    cutoff_list = [0]
     energy_list = []
     for cutoff in cutoff_list:
         qmmm_system.embedding_cutoff = cutoff

@@ -84,7 +84,6 @@ class QMSubsystem(System):
         self.scf_type = scf_type
         self.qmmm_pme = qmmm_pme
         self.n_threads = n_threads
-        psi4.set_num_threads(n_threads)
         options = {
             "basis": self.basis_set,
             "dft_spherical_points": self.quadrature_spherical,
@@ -93,6 +92,7 @@ class QMSubsystem(System):
             "pme": str(self.qmmm_pme).lower(),
         }
         psi4.set_options(options)
+        psi4.set_num_threads(n_threads)
         self.read_guess = read_guess
         self.wfn = None
         self.charge_field = None

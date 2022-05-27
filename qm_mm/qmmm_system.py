@@ -188,7 +188,6 @@ class QMMMSystem(System):
                     potential_grid,
                     return_grad=True,
                 )
-                arguments["nuc_extd_grad"] = nuc_extd_grad
             else:
                 (quad_extd_pot, nuc_extd_pot) = self.pbc_subsystem.build_extd_pot(
                     ref_quadrature,
@@ -202,6 +201,7 @@ class QMMMSystem(System):
             self.qm_subsystem.compute_gas_phase_energy()
             energy -= self.qm_subsystem.gas_phase_energy
         if forces:
+            arguments["nuc_extd_grad"] = nuc_extd_grad
             self.qm_subsystem.compute_forces(**arguments)
             forces = self.qm_subsystem.forces
             return (energy, forces)

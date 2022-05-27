@@ -3,11 +3,6 @@
 """
 QM/MM, a method to perform single-point QM/MM calculations using the 
 QM/MM/PME direct electrostatic QM/MM embedding method.
-
-Imports
--------
-os: Standard
-sys: Standard
 """
 import os
 import sys

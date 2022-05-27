@@ -216,8 +216,9 @@ class PBCSubsystem(System):
         # Cast positions to n_atoms x 1 x 3 array, which allows the
         # pme_xyz coordinates in real space to be broadcast onto the
         # QM region positions later.
-        positions = da.from_array(positions, chunks=(len(positions)//self.n_threads, 3))[:,np.newaxis,:] * self.angstrom_to_bohr
-        charges = da.from_array(charges, chunks=(len(charges)//self.n_threads,))
+        dim_one = max([len(positions)//self.n_threads,1])
+        positions = da.from_array(positions, chunks=(dim_one, 3))[:,np.newaxis,:] * self.angstrom_to_bohr
+        charges = da.from_array(charges, chunks=(dim_one,))
         # Get real-space PME grid coordinates for the excluded indices
         pme_exclusions = da.from_array(self.pme_xyz[indices,:])
         # Get the least-mirror postions between PME positions and the
@@ -248,8 +249,9 @@ class PBCSubsystem(System):
             # Cast positions to n_atoms x 1 x 3 array, which will allow
             # the PME exclusion positions in real space to be broadcast
             # onto the embedding region positions.
-            positions = da.from_array(positions, chunks=(len(positions)//self.n_threads, 3))[:,np.newaxis,:] * self.angstrom_to_bohr
-            charges = da.from_array(charges, chunks=(len(charges)//self.n_threads,))
+            dim_one = max([len(positions)//self.n_threads,1])
+            positions = da.from_array(positions, chunks=(dim_one, 3))[:,np.newaxis,:] * self.angstrom_to_bohr
+            charges = da.from_array(charges, chunks=(dim_one,))
             # Get least mirror postions between pmegrid positions and 
             # the embedding atom positions, which will broadcast to 
             # produce an n_atom x n_gridpoints x 3 array.
