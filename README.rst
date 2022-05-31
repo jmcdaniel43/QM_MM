@@ -62,7 +62,7 @@ Documentation
 -------------
 
 The documentation for this project can be found `here
-<http://johnppederson.com/qm_mm/html/index.html>`_!
+<http://johnppederson.com/qm_mm/docs/index.html>`_!
 
 Authors
 -------
